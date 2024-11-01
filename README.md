@@ -7,21 +7,21 @@
 ## First: creat a work directory and init it
 - 1. Creat a directory and name it anything you want
 - 2. Enter the cmd window and run this command
-```plantuml
+```shell
    git init
 ```
 - 3. Create a file or move code file in it, then add all this to buffer zone 
-```plantuml
+```shell
    touch test.txt
    git add .
 ```
 - 4. Then make a commit to my local repo
-```plantuml
+```shell
    git commit -m "xxxx"                   xxxx is the remark to the change 
 ```
 ![img_1.png](img_1.png)
 - 5. Add the remote repo and name it, then use [-v] to check the detail 
-```plantuml
+```shell
    git remote add origin [URL]
    git remote -v
 ```
@@ -30,27 +30,27 @@
 ```
 ![img_2.png](img_2.png)
 - 6. Get the remote repo information and check the branch
-```plantuml
+```shell
     git fetch origin
     git branch -a
 ```
 ![img_3.png](img_3.png)
 - 7. Make a tracking branch as prepare work
-```plantuml
+```shell
     git branch -u origin/master master 
     
     ---the first param is remote while the second is local---
 ```
-```plantuml
+```shell
     git branch -vv      [check the tracking information]
 ```
 - 8. Then pull the repo to update branch
-```plantuml
+```shell
     git pull --allow-unrelated-histories
 ```
 ![img_4.png](img_4.png)
 - 9. Finally directly push the commit the remote repo (Since tracking has been set)
-```plantuml
+```shell
     git push
 ```
 ![img_5.png](img_5.png)
@@ -60,7 +60,7 @@
 ## Part 2. Clone from remote repo and build cooperation
 - 1. Creat a directory and name it anything you want
 - 2. Enter the cmd window and run this command
-```plantuml
+```shell
     git clone [URL]
 ```
 
