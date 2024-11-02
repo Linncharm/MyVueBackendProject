@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue";
-import { useGlobalStore } from "stores/modules/global"
+import {computed,reactive} from "vue";
+import { useGlobalStore } from "/src/stores/modules/global"
 import {ElConfigProvider} from "element-plus";
 import {getBrowserLang, getNormalLang} from "@/utils";
 import en from "element-plus/es/locale/lang/en";
@@ -19,13 +19,15 @@ const globalStore = useGlobalStore()
 
 //简单的获取语言
 const locale = getNormalLang()=="zhCn"?zhCn:en ;
-
+/*
+动态获取语言
 const dynamicLocale = computed(() => {
   if (globalStore.language == "zh") return zhCn;
   if (globalStore.language == "en") return en;
   return getBrowserLang() == "zh" ? zhCn : en;  //恒定返回zh
 });
 
+ */
 
 
 // element assemblySize

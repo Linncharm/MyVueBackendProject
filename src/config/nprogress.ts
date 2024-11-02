@@ -1,5 +1,5 @@
 import NProgress from "nprogress"
-import "/nprogress/nprogress.css"
+import "nprogress/nprogress.css"
 
 
 //配置进度条
