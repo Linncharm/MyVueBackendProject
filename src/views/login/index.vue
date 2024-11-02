@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="login-container flx-center">
     <div class="login-box">
 
       <div class="login-left">
@@ -7,8 +7,8 @@
       </div>
       <div class="login-form">
         <div class="login-logo">
-          <img class="login-icon" src="@/assets/images/logo.svg" alt="Logo"/>
-          <h2 class="login-text">Linncharm</h2>
+          <img class="login-icon" src="@/assets/images/hatch-chicken.svg" alt="Logo"/>
+          <h2 class="logo-text"> Linncharm </h2>
         </div>
         <Loginform/>
       </div>
