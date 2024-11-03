@@ -1,6 +1,8 @@
 //登录模块接口
 //import { Login } from "@/api/interface";
 
+const md5String = "e10adc3949ba59abbe56e057f20f883e"
+
 const loginSuccessStatus =
     {
         "code": 200,
@@ -25,8 +27,11 @@ const loginFailedStatus ={
 /*---------排查发现将Login的import去掉即可，原因暂且未知---------*/
 export const loginApi = (params: Login.RequestLoginForm) => {
     if(params.username=="admin"||params.username=="user"){
-        if(params.password == e10adc3949ba59abbe56e057f20f883e ){
+        if(params.password == md5String ){
             return loginSuccessStatus;
+        }
+        else {
+            return loginFailedStatus;
         }
     }else {
         return loginFailedStatus;

@@ -16,6 +16,18 @@ export const staticRouter=[
         meta:{
             title:"登录"
         }
+    },
+    {
+        //children里的子路由都会经过/layout 从而定向至layouts里的index实现布局
+        path:'/layout',
+        component:()=>import("@/layouts/index.vue"),
+        redirect:HOME_URL,
+        children:[
+            {
+                path:HOME_URL,
+                component:()=>import("@/views/home/index.vue")
+            }
+        ]
     }
 ]
 

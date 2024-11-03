@@ -56,6 +56,7 @@ import {Lock, User} from "@element-plus/icons-vue";
 import {loginApi} from "@/api/modules/login";
 import router from "@/router";
 import useUserStore from "@/stores/modules/user";
+import {initDynamicRouter} from "@/router/modules/dynamicRouter";
 
 //FormInstance将代表ElForm的组件实例类型
 type FormInstance = InstanceType<typeof ElForm>;
@@ -98,13 +99,26 @@ const login = (form: FormInstance | undefined) => {
       // 注意，这里使用的是静态验证，如果要使用http的get方法则要await
       const allData = loginApi({...loginForm, password: md5(loginForm.password)});
       console.log("allData",allData);
-      const {data} = allData;
+      const {data,msg} = allData;
       console.log("data",data);
       userStore.setToken(data.access_token);
 
 
-      //2. -------跳转首页--------
-      router.push(HOME_URL);
+
+      //2. -------初始化路由-------
+      //根据传递的msg值来决定弹窗的内容
+      initDynamicRouter(msg);
+
+      //3. -------跳转首页--------
+      //router.push(HOME_URL);
+
+      //4. ------弹窗通知------
+      ElNotification({
+        title: "Success to Login",
+        message: " Welcome to Home ",
+        type: "success",
+        duration: 3000,
+      })
     }finally{
       loading.value = false;
     }

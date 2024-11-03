@@ -15,7 +15,6 @@ import zhCn from "element-plus/es/locale/lang/zh-cn";
 //配置全局设置
 const globalStore = useGlobalStore()
 //全局配置
-// element language
 
 //简单的获取语言
 const locale = getNormalLang()=="zhCn"?zhCn:en ;

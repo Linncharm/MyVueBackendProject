@@ -1,4 +1,5 @@
 import {defineStore} from "pinia";
+//import piniaPersistConfig from "@/stores/persist/persist";
 
 const useUserStore = defineStore({
     id:"user",
@@ -18,7 +19,7 @@ const useUserStore = defineStore({
         setUserInfo(userInfo:{name: string}){
             this.userInfo = userInfo;
         }
-    }
+    },
 })
 
 export default useUserStore;
