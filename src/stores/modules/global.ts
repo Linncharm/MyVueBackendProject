@@ -86,5 +86,7 @@ export const useGlobalStore = defineStore({
         isCollapse:false,
         //子菜单列表
         showMenuList:MenuList.value,
+        //页脚
+        footer:true,
     }),
 })

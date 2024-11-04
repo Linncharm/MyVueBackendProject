@@ -3,7 +3,7 @@
 ### https://router.vuejs.org/zh/guide/advanced/navigation-guards.html
 ## 2. The use of staticRouter and ... syntax
 ## 3. About layout component!!!
-```shell
+```typescript
     path:'/layout',
     component:()=>import("@/views/layout/index.vue"),
     redirect:HOME_URL,
@@ -17,7 +17,7 @@
 
 ## 4. Some verify step in dynamicRouter (will be improved soon...)
 ## 5. The slot usage on <router-view> component
-```shell
+```html
     <router-view v-slot="{ Component, route }">
 ```
 ![img.png](/png/router.png)
