@@ -14,7 +14,6 @@
       </transition>
     </router-view>
   </el-main>
-
   <el-footer v-show="footer">
     <Footer/>
   </el-footer>
@@ -33,6 +32,7 @@ import {h, ref} from "vue";
 const KeepAliveStore = useKeepAliveStore();
 const globalStore = useGlobalStore();
 
+const title = import.meta.env.VITE_DLOB_APP_TITLE
 
 const { footer } = storeToRefs(globalStore);
 const { keepAliveName } = storeToRefs(KeepAliveStore);
