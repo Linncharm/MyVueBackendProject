@@ -60,7 +60,12 @@ import { useDebounceFn } from "@vueuse/core";
 
 const { isCollapse } = storeToRefs(globalStore);
 const screenWidth = ref(0);
-const listeningWindow = useDebounceFn()
+const listeningWindow = useDebounceFn(()=>{
+  screenWidth.value = document.body.clientWidth;
+  if(!isCollapse.value&&screenWidth.value<10){
+    globalStore.setGlobalState("isCollapsed",true);
+  }
+})
 
 </script>
 

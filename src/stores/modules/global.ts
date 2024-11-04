@@ -89,4 +89,11 @@ export const useGlobalStore = defineStore({
         //页脚
         footer:true,
     }),
+    actions:{
+        //设置全局状态
+        //剩余参数语法，用于收集不定量的参数，形成一个数组
+        setGlobalState(...args: ObjToKeyValueArray<GlobalState>){
+            this.$patch({[args[0]] : [args[1]]});
+        }
+    }
 })
