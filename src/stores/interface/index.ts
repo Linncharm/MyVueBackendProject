@@ -14,3 +14,13 @@ export interface GlobalState {
     isCollapsed: boolean;
     showMenuList: Reactive<Array>;
 }
+
+//tabItem 接口定义
+export interface TabMenuProps {
+    icon:string;
+    title:string;
+    path:string;
+    name:string;
+    close:boolean;
+    isKeepAlive:boolean;
+}

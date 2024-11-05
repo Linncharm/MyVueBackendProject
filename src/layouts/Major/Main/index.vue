@@ -39,19 +39,24 @@ const { keepAliveName } = storeToRefs(KeepAliveStore);
 
 const isRouterShow=ref(true)
 
+//重点函数
 const wrapperMap = new Map();
-
 function createComponentWrapper(component,route){
+  //如果
   if(!component){
     return;
   }
-  console.log("route",route);
-  console.log("component",component);
+  console.log("Main-index-route",route);  //"fullPath:"/home/index" "
+  console.log("Main-index-component",component);  // Object
   const wrapperName = route.fullPath
   let wrapper = wrapperMap.get(wrapperName);
+  console.log("first-wrapper",wrapper)
   if (!wrapper){
     wrapper= {name:wrapperName,render:()=>h(component)};
+    console.log("second-wrapper",wrapper)
   }
+  console.log("h()",h(wrapper));
+  return h(wrapper);
 }
 
 //------监听窗口大小变化，折叠侧边栏------
@@ -75,7 +80,8 @@ const listeningWindow = useDebounceFn(()=>{
 
 console.log("!!!",isCollapse.value)
 
-window.addEventListener("resize",listeningWindow,true);
+//false选项代表在冒泡阶段处理，可以默认不选
+window.addEventListener("resize",listeningWindow,false);
 onBeforeUnmount(()=>{
   window.removeEventListener("resize",listeningWindow);
 })
