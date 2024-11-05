@@ -26,7 +26,7 @@ import {useKeepAliveStore} from "@/stores/modules/keepAlive";
 import {useGlobalStore} from "@/stores/modules/global";
 import Footer from "@/layouts/Major/Footer/index.vue"
 
-import {watch} from "vue";
+import {onBeforeMount, onBeforeUnmount, watch} from "vue";
 
 import {h, ref} from "vue";
 const KeepAliveStore = useKeepAliveStore();
@@ -62,9 +62,22 @@ const { isCollapse } = storeToRefs(globalStore);
 const screenWidth = ref(0);
 const listeningWindow = useDebounceFn(()=>{
   screenWidth.value = document.body.clientWidth;
-  if(!isCollapse.value&&screenWidth.value<10){
-    globalStore.setGlobalState("isCollapsed",true);
+  console.log(screenWidth.value)
+  if(!isCollapse.value&&screenWidth.value<1000){
+    globalStore.setGlobalState("isCollapse",true);
+    console.log("isCollapse",isCollapse.value);
   }
+  if(isCollapse.value&&screenWidth.value>1000){
+    globalStore.setGlobalState("isCollapse",false);
+    console.log("isCollapse",isCollapse.value);
+  }
+},100);
+
+console.log("!!!",isCollapse.value)
+
+window.addEventListener("resize",listeningWindow,true);
+onBeforeUnmount(()=>{
+  window.removeEventListener("resize",listeningWindow);
 })
 
 </script>

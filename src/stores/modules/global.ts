@@ -93,7 +93,10 @@ export const useGlobalStore = defineStore({
         //设置全局状态
         //剩余参数语法，用于收集不定量的参数，形成一个数组
         setGlobalState(...args: ObjToKeyValueArray<GlobalState>){
-            this.$patch({[args[0]] : [args[1]]});
+
+            this.$patch({[args[0]] : args[1]});
+            //以下是错误的写法 会导致收到数组形式的value
+            //this.$patch({[args[0]] : [args[1]] });
         }
     }
 })
