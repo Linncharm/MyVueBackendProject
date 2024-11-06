@@ -3,7 +3,7 @@
   <el-container class="layout">
 
     <el-aside>
-      <div class="aside-box" :style="{width:isCollapse? '65px' : '210px' }">
+      <div class="aside-box" :style="{width : isCollapse ? '65px' : '210px' }">
         <div class="logo flx-center">
           <img class="logo-img" src="@/assets/images/logo.svg" alt="logo"/>
           <span v-show="!isCollapse" class="logo-text">{{ title }}</span>
@@ -35,13 +35,17 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import {useGlobalStore} from "@/stores/modules/global";
+import {storeToRefs} from "pinia";
 
 import SubMenu from "@/layouts/Major/Submenu/SubMenu.vue";
 import Main from "@/layouts/Major/Main/index.vue"
 
 const title = "Dynamic Title"
 const globalStore = useGlobalStore();
-const isCollapse = computed(() => globalStore.isCollapsed );
+//const isCollapse = computed(() => globalStore.isCollapse );
+const {isCollapse} = storeToRefs(globalStore)
+
+console.log("Layout isCollapse", isCollapse);
 
 //由computed计算出的是响应式数据
 const menuList = computed(() => globalStore.showMenuList);
