@@ -1,5 +1,5 @@
 <template>
-
+  <Tabs/>
   <el-main>
     <router-view v-slot="{ Component , route }">
       <transition appear name="fade-transform" mode="out-in">
@@ -25,6 +25,8 @@ import {storeToRefs} from "pinia";  //将存储对象变为响应式
 import {useKeepAliveStore} from "@/stores/modules/keepAlive";
 import {useGlobalStore} from "@/stores/modules/global";
 import Footer from "@/layouts/Major/Footer/index.vue"
+
+import Tabs from "@/layouts/Major/Tabs/index.vue"
 
 import {onBeforeMount, onBeforeUnmount, watch} from "vue";
 

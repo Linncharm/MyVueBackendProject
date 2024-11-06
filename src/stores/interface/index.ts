@@ -21,6 +21,6 @@ export interface TabMenuProps {
     title:string;
     path:string;
     name:string;
-    close:boolean;
-    isKeepAlive:boolean;
+    close?:boolean;
+    isKeepAlive?:boolean;
 }

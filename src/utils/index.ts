@@ -18,3 +18,9 @@ export function getNormalLang(){
     defaultLang = "zhCn";
     return defaultLang;
 }
+
+//------扁平化菜单------
+export function getFlatMenuList(menuList){
+    let newMenuList = JSON.parse(JSON.stringify(menuList));
+    return newMenuList.flatMap(item => [item, ...(item.children ? getFlatMenuList(item.children) : [])]);
+}

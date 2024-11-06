@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import router from "@/router";
-import {TabMenuProps} from "@/stores/interface";
+import type TabMenuProps from "@/stores/interface";
 
 export const useTabStores = defineStore({
     id:"linncharm-tabs",
@@ -16,7 +16,7 @@ export const useTabStores = defineStore({
             }
         },
         async removeTab(tabItem:TabMenuProps){
-
+            /* 移除tabs方法 */
         }
     }
 })
