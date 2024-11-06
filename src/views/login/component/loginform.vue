@@ -58,6 +58,23 @@ import router from "@/router";
 import useUserStore from "@/stores/modules/user";
 import {initDynamicRouter} from "@/router/modules/dynamicRouter";
 
+onMounted(() => {
+  //监听enter事件
+  document.onkeydown=(event: KeyboardEvent) => {
+    if(event.code == "Enter" || event.code == "enter" || event.code == "NumpadEnter") {
+      //若已经在加载中则返回，避免重复加载
+      if(loading.value) {
+        return;
+      }
+      login(loginFormRef.value);
+    }
+  }
+})
+
+onBeforeUnmount(() => {
+  document.onkeydown = null;
+});
+
 //FormInstance将代表ElForm的组件实例类型
 type FormInstance = InstanceType<typeof ElForm>;
 
