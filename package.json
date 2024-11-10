@@ -2,8 +2,10 @@
   "name": "myvuebackendproject",
   "version": "0.0.0",
   "private": true,
+  "main": "electron-test/main.js",
   "type": "module",
   "scripts": {
+    "start": "electron .",
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
@@ -28,6 +30,7 @@
     "@types/node": "^20.17.0",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/tsconfig": "^0.5.1",
+    "electron": "^33.1.0",
     "npm-run-all2": "^7.0.1",
     "sass": "^1.77.6",
     "sass-embedded": "^1.80.6",

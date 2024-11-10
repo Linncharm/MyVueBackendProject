@@ -5,12 +5,12 @@
         <el-tab-pane
             v-for="item in flatMenuList"
             :key="item.path"
-            :label="item.label"
+            :label="item.name"
             :name="item.path"
             :closable="true">
           <template #label>
-            <el-icon v-if="item.icon" class="tabs-icon">
-              <component :is="item.icon"></component>
+            <el-icon v-if="item.meta.icon" class="tabs-icon">
+              <component :is="item.meta.icon"></component>
             </el-icon>
           </template>
         </el-tab-pane>
