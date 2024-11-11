@@ -15,8 +15,17 @@ export const useTabStores = defineStore({
                 this.tabsMenuList.push(tabItem);
             }
         },
-        async removeTab(tabItem:TabMenuProps){
-            /* 移除tabs方法 */
+        //如果没有提供isCurrent参数，则默认为true
+        async removeTab(tabPath:string,isCurrent: boolean=true){
+            if(isCurrent){
+                this.tabsMenuList.forEach((item,index)=>{
+                    if(item.path!=tabPath) return;
+                    //navigate to a neighbor tab
+                    const nextTab = this.tabsMenuList[index+1] || this.tabsMenuList[index-1];
+                    if(!nextTab) return;
+                    router.push(nextTab.path);
+                });
+            }
         }
     }
 })

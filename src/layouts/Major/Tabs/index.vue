@@ -1,7 +1,7 @@
 <template>
   <div class="tabs-box">
     <div class="tabs-menu">
-      <el-tabs v-model="tabsMenuValue" type="card" >
+      <el-tabs v-model="tabsMenuValue" type="card" @tab-click="tabClick" @tab-remove="removeTab">
         <el-tab-pane
             v-for="item in flatMenuList"
             :key="item.path"
@@ -25,6 +25,7 @@ import {useGlobalStore} from "@/stores/modules/global";
 import {getFlatMenuList} from "@/utils";
 import {onMounted,ref} from "vue";
 import { useRoute } from "vue-router";
+import router from "@/router";
 
 const route = useRoute();
 const globalStore = useGlobalStore();
@@ -52,6 +53,18 @@ const initTabs = ()=>{
     }
     tabStores.addTabs(tabsParams);
   })
+}
+
+//Click the tab to jump to the corresponding page
+const tabClick = (tabItem)=>{
+  const fullPath = tabItem.props.name as string;
+  router.push(fullPath);
+}
+
+//remove tab
+const removeTab = (tabItem)=>{
+  const fullPath = tabItem.props.name as string;
+  tabStores.removeTab(fullPath);
 }
 
 </script>
