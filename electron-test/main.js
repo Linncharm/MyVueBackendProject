@@ -2,14 +2,19 @@
 import { app, BrowserWindow,globalShortcut,session} from 'electron'
 import path from 'path'
 
+import WinState from 'electron-window-state'
+
 const createWindow = () => {
+    const winState = new WinState({
+        defaultWidth: 1000,
+        defaultHeight: 800
+    })
     const win = new BrowserWindow({
-        width: 1000,
-        height: 800,
+        ...winState,
     })
 
     win.loadURL('http://localhost:8888')
-
+    winState.manage(win)
 }
 
 function registerShortcuts(){
