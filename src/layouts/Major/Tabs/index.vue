@@ -12,6 +12,7 @@
             <el-icon v-if="item.meta.icon" class="tabs-icon">
               <component :is="item.meta.icon"></component>
             </el-icon>
+            {{  item.title }}
           </template>
         </el-tab-pane>
       </el-tabs>
@@ -28,9 +29,11 @@ import { useRoute } from "vue-router";
 import router from "@/router";
 
 const route = useRoute();
+
 const globalStore = useGlobalStore();
 const {showMenuList} = globalStore
 const flatMenuList = getFlatMenuList(showMenuList);
+console.log("flatMenuList",flatMenuList);
 
 const tabsMenuValue = ref(route.fullPath)
 
@@ -52,7 +55,9 @@ const initTabs = ()=>{
       name : item.meta.name,
     }
     tabStores.addTabs(tabsParams);
+    console.log("tabMenuList",tabStores.tabsMenuList)
   })
+
 }
 
 //Click the tab to jump to the corresponding page
