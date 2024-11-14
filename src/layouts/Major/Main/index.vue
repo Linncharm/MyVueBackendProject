@@ -63,6 +63,7 @@ function createComponentWrapper(component,route){
 
 //------监听窗口大小变化，折叠侧边栏------
 //注意要转换为响应式，然后使用value
+//防抖
 import { useDebounceFn } from "@vueuse/core";
 
 const { isCollapse } = storeToRefs(globalStore);

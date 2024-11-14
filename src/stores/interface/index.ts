@@ -11,7 +11,7 @@ export interface GlobalState {
     language?: string;
     layout: LayoutType;
     assemblySize: AssemblySizeType;
-    isCollapsed: boolean;
+    isCollapse: boolean;
     showMenuList: Reactive<Array>;
 }
 
