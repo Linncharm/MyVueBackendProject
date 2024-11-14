@@ -4,11 +4,12 @@
 
     <el-aside>
       <div class="aside-box" :style="{width : isCollapse ? '65px' : '210px' }">
+
         <div class="logo flx-center">
           <img class="logo-img" src="@/assets/images/logo.svg" alt="logo"/>
           <span v-show="!isCollapse" class="logo-text">{{ title }}</span>
         </div>
-      </div>
+
       <el-scrollbar>
         <el-menu
           :router="false"
@@ -19,11 +20,19 @@
         </el-menu>
       </el-scrollbar>
 
+      </div>
     </el-aside>
 
     <el-container>
       <el-header>
-
+        <el-button
+            type="text"
+            @click="isCollapse=!isCollapse"
+        >
+          <el-icon class="btn-icon">
+            <component :is="isCollapse?'DArrowRight':'DArrowLeft'" />
+          </el-icon>
+        </el-button>
       </el-header>
 
       <Main/>
@@ -39,6 +48,7 @@ import {storeToRefs} from "pinia";
 
 import SubMenu from "@/layouts/Major/Submenu/SubMenu.vue";
 import Main from "@/layouts/Major/Main/index.vue"
+import {Edit} from "@element-plus/icons-vue";
 
 const title = "Dynamic Title"
 const globalStore = useGlobalStore();

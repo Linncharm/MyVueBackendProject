@@ -36,6 +36,17 @@ defineProps<{menuList:any}>()  //暂时写成any
 </script>
 
 <style lang="scss">
+:root {
+  --el-color-primary: #da5d5d;
+  --el-menu-bg-color: #ffffff;
+  --el-menu-hover-bg-color: #cccccc;
+  --el-menu-active-bg-color: var(--el-color-primary-light-8);
+  --el-menu-text-color: #333333;
+  --el-menu-active-color: #13a9ea;
+  --el-menu-hover-text-color: #333333;
+  --el-menu-horizontal-sub-item-height: 50px;
+}
+
 .el-sub-menu .el-sub-menu__title:hover {
   color: var(--el-menu-hover-text-color) !important;
   background-color: transparent !important;
@@ -56,32 +67,13 @@ defineProps<{menuList:any}>()  //暂时写成any
     color: var(--el-menu-active-color) !important;
     background-color: var(--el-menu-active-bg-color) !important;
     &::before {
+      left: 0;
       position: absolute;
       top: 0;
       bottom: 0;
       width: 4px;
       content: "";
       background-color: var(--el-color-primary);
-    }
-  }
-}
-.vertical,
-.classic,
-.transverse {
-  .el-menu-item {
-    &.is-active {
-      &::before {
-        left: 0;
-      }
-    }
-  }
-}
-.columns {
-  .el-menu-item {
-    &.is-active {
-      &::before {
-        right: 0;
-      }
     }
   }
 }
