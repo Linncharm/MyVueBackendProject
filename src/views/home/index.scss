@@ -7,8 +7,12 @@
   height: 100%; // 填满el-main的高度
 
   .home-title {
-    margin-bottom: 0; // 去掉下边距，确保紧挨着 home-content
+    margin-top: 20px;
+    margin-bottom: 10px; // 去掉下边距，确保紧挨着 home-content
     padding: 0;
+    text-shadow: 0.8rem 0.3rem 0.25rem gray;
+    font-size: 40px;
+    font-family: "cursive" , cursive;
   }
 
   .home-content {
@@ -23,6 +27,6 @@
     scale: 0.9; // 缩小到50%
     max-width: 100%; // 保证图片不会超出容器宽度
     max-height: 100%; // 保证图片不会超出容器高度
-    margin-top: 100px;
+    margin-top: 30px;
   }
 }

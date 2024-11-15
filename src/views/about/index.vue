@@ -11,8 +11,8 @@
           <span> 🍉 Show the latest 5 records of commit </span>
           <el-button class="committer-button" @click="getCommitInformation">
             <span>Reset</span>
-            <el-icon style="margin-left: 1.5px">
-              <Loading/>
+            <el-icon style="margin-left: 1.5px" :class="getCommitInformationState ? 'is-loading' : '' ">
+              <Refresh/>
             </el-icon>
           </el-button>
         </div>
@@ -20,8 +20,8 @@
           <el-table-column prop="date" label="Latest Day" width="180"></el-table-column>
           <el-table-column label="Commiter" width="180">
             <template #default="{ row }">
-              <div style="display: flex; align-items: center">
-                <el-avatar :src="row.avatar" size="small" style="margin-right: 8px"></el-avatar>
+              <div style="display: flex; align-items: center ; font-weight: bold">
+                <el-avatar :src="row.avatar" shape="square" size="small" style="margin-right: 8px"></el-avatar>
                 <span class="committer-name">
                   {{ row.name }}
                 </span>
@@ -41,10 +41,9 @@
 
 <script setup lang="ts">
 import { onMounted , ref} from "vue";
-import axios from "axios";
 import { Octokit } from "octokit";
-import {Loading, Star} from "@element-plus/icons-vue";
-import Nprogress from "@/config/nprogress";
+import {Refresh} from "@element-plus/icons-vue";
+import NProgress from "@/config/nprogress";
 import { ElMessage } from "element-plus";
 
 const tableData = ref([]);
@@ -57,12 +56,15 @@ const octokit = new Octokit({
   }
 })
 
+const getCommitInformationState = ref(false);
+
 async function getCommitInformation(){
     //不能使用const resp = ...
     //The resp variable is declared inside the try block, so it is not accessible in the finally block
     let resp:any;
     try{
-      Nprogress.start();
+      getCommitInformationState.value = true;
+      NProgress.start();
       resp = await octokit.request('GET /repos/{owner}/{repo}/commits',{
         owner:'Linncharm',
         repo:'MyVueBackendProject',
@@ -75,10 +77,13 @@ async function getCommitInformation(){
       //   console.log("respData",resp)
       // })
     }catch (e){
+      getCommitInformationState.value = false;
       ElMessage.error("Check the network")
+      NProgress.done();
       console.error("github api went wrong",e)
     }finally {
-      Nprogress.done();
+      getCommitInformationState.value = false;
+      NProgress.done();
       console.log("respData",resp)
     }
 
@@ -101,13 +106,18 @@ function capitalizeFirstLetter(originString:string){
 }
 
 function convertDate(originDate:string){
-  const year = originDate.slice(0,4);
+  const morning = '☀️';  //7-12
+  const afternoon = '🌤️';  //12-18
+  const evening = '🌙';    //18-24
+  const midnight = '🌑';   //0-8
+  const year = originDate.slice(2,4);
   const month = originDate.slice(5,7);
   const day = originDate.slice(8,10);
   const hour = Number(originDate.slice(11,13))+8;  // 转换为北京时间
   const minute = originDate.slice(14,16);
   const second = originDate.slice(17,19);
-  return `${year}/${month}/${day} ${hour}:${minute}:${second}`
+  const prefixEmoji = hour >= 7 && hour < 12 ? morning : hour >= 12 && hour < 18 ? afternoon : hour >= 18 && hour < 24 ? evening : midnight;
+  return `${prefixEmoji} ${year}/${month}/${day} ${hour}:${minute}:${second}`
 }
 
 </script>

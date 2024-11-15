@@ -8,6 +8,7 @@ import App from './App.vue'
 import router from './router'
 import pinia from "@/stores";
 
+
 import "@/styles/reset.scss"
 
 //引入flex的相关样式，如flx-center
