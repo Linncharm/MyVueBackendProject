@@ -8,11 +8,12 @@ export type LayoutType = "vertical" | "horizontal" ;
 
 /*全局样式接口定义*/
 export interface GlobalState {
-    language?: string;
+    language?: "zh" | "en" | null;
     layout: LayoutType;
     assemblySize: AssemblySizeType;
     isCollapse: boolean;
-    showMenuList: Reactive<Array>;
+    showMenuList: Reactive<Array<any>>;  //暂时先any
+    footer: boolean;
 }
 
 //tabItem 接口定义

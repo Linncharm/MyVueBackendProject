@@ -1,4 +1,5 @@
-import Home from "@/views/home/index.vue"
+import {HOME_URL} from "@/config/constants";
+import Home from "@/views/home/index.vue";
 import Blog from "@/views/blog/index.vue";
 import First from "@/components/Project/first.vue";
 import Second from "@/components/Project/second.vue";
@@ -80,7 +81,7 @@ export const tempRouter = [
     },
 
     {
-        path:'/home/index',
+        path:'/home/index/',
         name:'home',
         component:Home,
         meta:{

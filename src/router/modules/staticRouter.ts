@@ -1,4 +1,5 @@
 import { LOGIN_URL,HOME_URL } from "@/config/constants";
+import { tempRouter } from "@/router/modules/tempRouter";
 //import { RouteRecordRaw } from "vue-router"; //用于定义路由中的记录类型
 /*
 静态路由
@@ -22,12 +23,7 @@ export const staticRouter=[
         path:'/layout',
         component:()=>import("@/layouts/index.vue"),
         redirect:HOME_URL,
-        children:[
-            {
-                path:HOME_URL,
-                component:()=>import("@/views/home/index.vue")
-            }
-        ]
+        children:tempRouter,
     }
 ]
 

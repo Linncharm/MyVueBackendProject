@@ -8,7 +8,7 @@ import {tempRouter} from "@/router/modules/tempRouter";
 const router = createRouter({
   history: createWebHistory(),
   // [...]为展开语法，适合将多个数组合并
-  routes: [...staticRouter,...errorRouter,...tempRouter],
+  routes: [...staticRouter,...errorRouter],
 
   strict: false,
 
