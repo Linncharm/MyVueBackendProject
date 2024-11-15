@@ -17,8 +17,8 @@
 
     </el-sub-menu>
 
-<!--    剩下的都是单独的item组件-->
-    <el-menu-item v-else :index="subItem.path">
+<!--    剩下的都是单独的item组件,要添加点击后跳转方法-->
+    <el-menu-item v-else :index="subItem.path" @click="changeToMenuItem(subItem)">
       <el-icon>
         <component :is="subItem.meta.icon" />
       </el-icon>
@@ -31,8 +31,15 @@
 </template>
 
 <script setup lang="ts">
+
+import router from "@/router/index";
 //  const props = defineProps(["menuList"])  const { menuList } = props
 defineProps<{menuList:any}>()  //暂时写成any
+
+const changeToMenuItem = (item:any)=>{
+  router.push(item.path)
+}
+
 </script>
 
 <style lang="scss">
