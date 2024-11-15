@@ -69,3 +69,42 @@ It will creat a .git directory with git configure in secret, and initialize it a
 - 3. Then the repo can be successfully download
 ## 🔴Part 3. Some useful tips about git
 ### 1. The operation of <u>branch</u>
+- 1.1 Create a new branch
+```shell
+    git branch [branch_name]
+```
+- 1.2 Switch to the branch
+```shell
+    git checkout [branch_name]
+```
+- 1.3 Create a new branch and switch to it
+```shell
+    git checkout -b [branch_name]
+```
+- 1.4 Merge the dev branch to the master branch
+```shell
+    git checkout master
+    git merge dev
+```
+
+## 🔴🔴 Some Emergency Error
+## When there is a time pushing the commit to remote repo, it will show the error like this
+```shell
+fatal: unable to access 'https://github.com/xxxx': 
+Failed to connect to github.com port 443 after 21039 ms: 
+Could not connect to server
+```
+### There are some solutions to solve this problem
+- 1. Disable the ssl verification (not recommended)
+```shell
+    git config --global http.sslVerify false
+```
+- 2. Find the process that occupies the port 443 and kill it
+```shell
+    netstat -ano | findstr 443
+    taskkill /F /PID [PID]
+```
+or batch operation
+```shell
+    for /f "tokens=5" %a in ('netstat -aon ^| findstr "443"') do taskkill /F /PID %a
+```
