@@ -1,6 +1,11 @@
 <template>
-  <div class="home card">
-    <img class="home-bg" src="@/assets/images/login_left.png" alt="welcome">
+  <div class="home-container">
+    <div class="home-title">
+      <p>1111</p>
+    </div>
+    <div class="home-content">
+      <img class="home-bg" src="@/assets/images/login_left.png" alt="welcome">
+    </div>
   </div>
 </template>
 

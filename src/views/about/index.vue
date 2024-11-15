@@ -3,25 +3,19 @@
     <div class="about-information">
       <el-card>
         <p>111</p>
-        <p>111</p>
-        <p>111</p>
-        <p>111</p>
-        <p>111</p>
-        <p>111</p>
-        <p>111</p>
-        <p>111</p>
-        <p>111</p>
       </el-card>
     </div>
     <div class="about-latest-commit">
-      <el-card>
-        <span class="committer-title"> Show the latest 5 records of commit </span>
-        <el-button>
-          <span>Reset</span>
-          <el-icon>
-            <Loading/>
-          </el-icon>
-        </el-button>
+      <el-card class="committer-body">
+        <div class="committer-title">
+          <span> 🍉 Show the latest 5 records of commit </span>
+          <el-button class="committer-button" @click="getCommitInformation">
+            <span>Reset</span>
+            <el-icon style="margin-left: 1.5px">
+              <Loading/>
+            </el-icon>
+          </el-button>
+        </div>
         <el-table :data="tableData" border style="width: 100%" empty-text="No data yet">
           <el-table-column prop="date" label="Latest Day" width="180"></el-table-column>
           <el-table-column label="Commiter" width="180">
@@ -50,44 +44,56 @@ import { onMounted , ref} from "vue";
 import axios from "axios";
 import { Octokit } from "octokit";
 import {Loading, Star} from "@element-plus/icons-vue";
+import Nprogress from "@/config/nprogress";
+import { ElMessage } from "element-plus";
+
 const tableData = ref([]);
 
 const octokit = new Octokit({
   //my github token
-  auth:import.meta.env.VITE_GITHUB_TOKEN
+  auth:import.meta.env.VITE_GITHUB_TOKEN,
+  request: {
+    timeout: 500
+  }
 })
 
-onMounted(async () => {
-
-  //不能使用const resp = ...
-  //The resp variable is declared inside the try block, so it is not accessible in the finally block
-  let resp:any;
-  try{
-    resp = await octokit.request('GET /repos/{owner}/{repo}/commits',{
-      owner:'Linncharm',
-      repo:'MyVueBackendProject',
-      per_page:5,
-      headers: {
-        'X-GitHub-Api-Version': '2022-11-28'
-      },
-    })
-        // .then(()=>{
-        //   console.log("respData",resp)
-        // })
-  }catch (e){
-    console.error("github api went wrong",e)
-  }finally {
-    console.log("respData",resp)
-  }
-
-  tableData.value = resp.data.map((item:any) => {
-    return {
-      date: convertDate(item.commit.committer.date),
-      name: item.commit.committer.name,
-      content: capitalizeFirstLetter(item.commit.message),
-      avatar: item.committer.avatar_url,
+async function getCommitInformation(){
+    //不能使用const resp = ...
+    //The resp variable is declared inside the try block, so it is not accessible in the finally block
+    let resp:any;
+    try{
+      Nprogress.start();
+      resp = await octokit.request('GET /repos/{owner}/{repo}/commits',{
+        owner:'Linncharm',
+        repo:'MyVueBackendProject',
+        per_page:5,
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28'
+        },
+      })
+      // .then(()=>{
+      //   console.log("respData",resp)
+      // })
+    }catch (e){
+      ElMessage.error("Check the network")
+      console.error("github api went wrong",e)
+    }finally {
+      Nprogress.done();
+      console.log("respData",resp)
     }
-  })
+
+    tableData.value = resp.data.map((item:any) => {
+      return {
+        date: convertDate(item.commit.committer.date),
+        name: item.commit.committer.name,
+        content: capitalizeFirstLetter(item.commit.message),
+        avatar: item.committer.avatar_url,
+      }
+    })
+}
+
+onMounted(()=>{
+  getCommitInformation();
 })
 
 function capitalizeFirstLetter(originString:string){

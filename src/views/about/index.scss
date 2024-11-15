@@ -5,6 +5,25 @@
   flex-direction: column;
   justify-content: space-between;
   flex:1;
-  .committer-name{
+  .el-card{
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+  }
+}
+
+.committer-body{
+
+}
+
+.committer-title{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items:center;
+  padding-bottom: 15px;
+  .committer-button{
+    margin-left: 15px;
+    scale: 100%;
   }
 }

@@ -1,12 +1,28 @@
-.home {
+.home-container {
   display: flex;
+  flex-direction: column;
+  justify-content: start; // 确保内容从顶部开始
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
+  height: 100%; // 填满el-main的高度
+
+  .home-title {
+    margin-bottom: 0; // 去掉下边距，确保紧挨着 home-content
+    padding: 0;
+  }
+
+  .home-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(100% - 50px); // 动态高度，避免上下部分之间的间隙，根据需要调整
+  }
+
   .home-bg {
-    width: 70%;
-    max-width: 1200px;
-    margin-bottom: 20px;
+    scale: 0.9; // 缩小到50%
+    max-width: 100%; // 保证图片不会超出容器宽度
+    max-height: 100%; // 保证图片不会超出容器高度
+    margin-top: 100px;
   }
 }
