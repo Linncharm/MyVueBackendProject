@@ -41,6 +41,12 @@ export const useGlobalStore = defineStore({
             this.$patch({[args[0]] : args[1]});
             //以下是错误的写法 会导致收到数组形式的value
             //this.$patch({[args[0]] : [args[1]] });
+        },
+        //设置子菜单列表
+        addMenuItem(item:object, index:number) {
+            this.showMenuList.splice(index, 0, item);
         }
+
+
     }
 })

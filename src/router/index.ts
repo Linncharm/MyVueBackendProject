@@ -29,6 +29,7 @@ router.beforeEach(async (to, from, next) => {
 
   //2222.判断是不是登录页面，若有token就在渲染当前页面，没有就跳转登录页面
   if(to.path.toLocaleLowerCase() === LOGIN_URL){
+    console.log("beforeEach-token",userStore.token);
     if(userStore.token){
       return next(from.fullPath);
     }

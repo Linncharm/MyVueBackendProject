@@ -69,21 +69,21 @@
         v-model="itemForm"
         :rules="itemFormRules"
         v-if="itemForm.type === 'menu'">
-        <el-form-item prop="title" label="Title" >
-          <el-input v-model="itemForm.title" placeholder="Please enter the item title"/>
-        </el-form-item>
-        <el-form-item prop="index" label="Index">
-          <el-select v-model="itemForm.index" placeholder="Please choose the index (The place put item)">
-            <el-option
-                v-for="(item,index) in showMenuListLength+1"
-                :label="index"
-                :key="item"
-                :value="index"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item prop="path" label="Path">
-          <el-input v-model="itemForm.path" placeholder="Please enter the path"/>
-        </el-form-item>
+      <el-form-item prop="title" label="Title" >
+        <el-input v-model="itemForm.title" placeholder="Please enter the item title"/>
+      </el-form-item>
+      <el-form-item prop="index" label="Index">
+        <el-select v-model="itemForm.index" placeholder="Please choose the index (The place put item)">
+          <el-option
+              v-for="(item,index) in showMenuListLength+1"
+              :label="index"
+              :key="item"
+              :value="index"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="path" label="Path">
+        <el-input v-model="itemForm.path" placeholder="Please enter the path"/>
+      </el-form-item>
     </el-form>
     <el-form v-else-if="itemForm.type === 'submenu'">
         <el-form-item label="Title">
@@ -96,7 +96,7 @@
     </el-form>
     <template #footer>
       <el-button @click="dialogVisible=false">Cancel</el-button>
-      <el-button type="primary" @click="dialogVisible=false">Confirm</el-button>
+      <el-button type="primary" @click="dialogConfirm(itemForm)">Confirm</el-button>
     </template>
 
   </el-dialog>
@@ -142,6 +142,29 @@ const handleClosed = (done: ()=>void)=> {
   done();
 }
 
+function dialogConfirm(itemForm:any){
+  console.log("dialogConfirm", itemForm);
+  if(!itemForm.type && itemForm.title && itemForm.index && itemForm.path){
+    return;
+  }
+  if(itemForm.type === 'menu'){
+    const transformedItem =  {
+        path: itemForm.path,
+        name: itemForm.title,
+        component: ()=>import('@/views/about/index.vue'),
+        meta: {
+          title: itemForm.title,
+          icon: 'UserFilled'
+        }
+      }
+    console.log("transformedItem", transformedItem);
+    globalStore.addMenuItem(transformedItem, itemForm.index);
+  }else if(itemForm.type === 'submenu'){
+    console.log("will add submenu item");
+  }
+  dialogVisible.value = false;
+
+}
 
 function addSubMenuItem(){
   dialogVisible.value = true;
