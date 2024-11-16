@@ -54,6 +54,7 @@
     align-center
     width="50%"
     title="Add new item"
+    :before-close="handleClosed"
   >
     <el-form>
       <el-form-item>
@@ -63,41 +64,34 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form v-model="itemForm">
-      <div v-if="itemForm.type === 'menu'">
-        <el-form-item
-            prop="title"
-            label="Title"
-            :rules="[
-              { required: true, message: 'Please enter the item title', trigger: 'blur' }
-            ]">
+    <el-form
+        ref="formRef"
+        v-model="itemForm"
+        :rules="itemFormRules"
+        v-if="itemForm.type === 'menu'">
+        <el-form-item prop="title" label="Title" >
           <el-input v-model="itemForm.title" placeholder="Please enter the item title"/>
         </el-form-item>
-        <el-form-item prop="index" label="Index" :rules="[
-          { required: true, message: 'Please enter the index', trigger: 'blur' }
-        ]">
-          <el-select v-model="itemForm.index" placeholder="Please choose the index">
+        <el-form-item prop="index" label="Index">
+          <el-select v-model="itemForm.index" placeholder="Please choose the index (The place put item)">
             <el-option
-                v-for="item in showMenuListLength"
-                :label="item"
+                v-for="(item,index) in showMenuListLength+1"
+                :label="index"
                 :key="item"
-                :value="item"/>
+                :value="index"/>
           </el-select>
         </el-form-item>
-        <el-form-item prop="path" label="Path" :rules="[
-          { required: true, message: 'Please enter the path', trigger: 'blur' }
-        ]">
+        <el-form-item prop="path" label="Path">
           <el-input v-model="itemForm.path" placeholder="Please enter the path"/>
         </el-form-item>
-      </div>
-      <div v-else-if="itemForm.type === 'submenu'">
+    </el-form>
+    <el-form v-else-if="itemForm.type === 'submenu'">
         <el-form-item label="Title">
           <el-input v-model="itemForm.title" placeholder="Please enter the title"/>
         </el-form-item>
         <el-form-item label="Path">
           <el-input v-model="itemForm.path" placeholder="Please enter the path"/>
         </el-form-item>
-      </div>
 
     </el-form>
     <template #footer>
@@ -110,7 +104,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed , ref } from "vue";
+import type { FormInstance } from "element-plus"
+import {computed, reactive, ref} from "vue";
 import {useGlobalStore} from "@/stores/modules/global";
 import {storeToRefs} from "pinia";
 import { tempRouter } from "@/router/modules/tempRouter";
@@ -125,18 +120,34 @@ const {isCollapse} = storeToRefs(globalStore)
 
 const { showMenuListLength } = storeToRefs(globalStore)
 
-const itemForm =ref({
+const formRef = ref<FormInstance>()
+
+const itemForm =reactive({
   type:'',
   title:'',
   index:'',
   path:''
 })
 
+const itemFormRules ={
+  title: [{ required: true, message: 'Please enter the item title', trigger: 'blur' }],
+  index: [{ required: true, message: 'Please enter the index', trigger: 'change' }],
+  path: [{ required: true, message: 'Please enter the path', trigger: 'blur' }]
+}
+
 const dialogVisible = ref(false);
+const handleClosed = (done: ()=>void)=> {
+  console.log("handleClosed");
+  itemForm.type = '';
+  done();
+}
+
 
 function addSubMenuItem(){
   dialogVisible.value = true;
 }
+
+
 
 console.log("Layout isCollapse", isCollapse);
 
