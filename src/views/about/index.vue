@@ -9,7 +9,7 @@
       <el-card class="committer-body">
         <div class="committer-title">
           <span> 🍉 Show the latest 5 records of commit </span>
-          <el-button class="committer-button" @click="getCommitInformation">
+          <el-button class="committer-button" @click="resetCommitInformation">
             <span>Reset</span>
             <el-icon style="margin-left: 1.5px" :class="getCommitInformationState ? 'is-loading' : '' ">
               <Refresh/>
@@ -35,7 +35,7 @@
           :total="totalRecords"
           :current-page="currentPage"
           layout="prev, pager, next"
-          @current-change="getCommitInformation"
+          @current-change="handleCurrentChange"
         />
       </el-card>
     </div>
@@ -57,7 +57,9 @@ const tableData = ref([]);
 
 const currentPage = ref(1);
 const perPage = ref(5);
-const totalRecords = ref(1);
+
+//总条目数
+const totalRecords = ref(0);
 
 const octokit = new Octokit({
   //my github token
@@ -69,7 +71,11 @@ const octokit = new Octokit({
 
 const getCommitInformationState = ref(false);
 
-
+function handleCurrentChange(page: number){
+  console.log("page",page)
+  currentPage.value = page;
+  getCommitInformation();
+}
 
 async function getCommitInformation(){
     //不能使用const resp = ...
@@ -109,6 +115,15 @@ async function getCommitInformation(){
         avatar: item.committer.avatar_url,
       }
     })
+
+    totalRecords.value = resp.headers.link ?
+        Number([...resp.headers.link.matchAll(/&page=(\d+)>; rel="last"/g)][0]?.[1]) * perPage.value : 1 ;
+    console.log("totalRecords",totalRecords.value)  //10 correctly returned
+}
+
+function resetCommitInformation(){
+  currentPage.value = 1;
+  getCommitInformation();
 }
 
 onMounted(()=>{
