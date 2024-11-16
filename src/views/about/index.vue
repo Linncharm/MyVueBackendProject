@@ -30,6 +30,13 @@
           </el-table-column>
           <el-table-column prop="content" label="Content"></el-table-column>
         </el-table>
+        <el-pagination style="margin-top: 10px ; scale: 90%"
+          :page-size="perPage"
+          :total="totalRecords"
+          :current-page="currentPage"
+          layout="prev, pager, next"
+          @current-change="getCommitInformation"
+        />
       </el-card>
     </div>
     <div class="about-usage">
@@ -48,6 +55,10 @@ import { ElMessage } from "element-plus";
 
 const tableData = ref([]);
 
+const currentPage = ref(1);
+const perPage = ref(5);
+const totalRecords = ref(1);
+
 const octokit = new Octokit({
   //my github token
   auth:import.meta.env.VITE_GITHUB_TOKEN,
@@ -57,6 +68,8 @@ const octokit = new Octokit({
 })
 
 const getCommitInformationState = ref(false);
+
+
 
 async function getCommitInformation(){
     //不能使用const resp = ...
@@ -68,7 +81,8 @@ async function getCommitInformation(){
       resp = await octokit.request('GET /repos/{owner}/{repo}/commits',{
         owner:'Linncharm',
         repo:'MyVueBackendProject',
-        per_page:5,
+        per_page:perPage.value,
+        page:currentPage.value,
         headers: {
           'X-GitHub-Api-Version': '2022-11-28'
         },
@@ -112,10 +126,15 @@ function convertDate(originDate:string){
   const midnight = '🌑';   //0-8
   const year = originDate.slice(2,4);
   const month = originDate.slice(5,7);
-  const day = originDate.slice(8,10);
-  const hour = Number(originDate.slice(11,13))+8;  // 转换为北京时间
+  let hour = Number(originDate.slice(11,13))+8;  // 转换为北京时间
+  let day = Number(originDate.slice(8,10));
   const minute = originDate.slice(14,16);
   const second = originDate.slice(17,19);
+
+  if(hour > 24){
+    hour -= 24;
+    day += 1;
+  }
   const prefixEmoji = hour >= 7 && hour < 12 ? morning : hour >= 12 && hour < 18 ? afternoon : hour >= 18 && hour < 24 ? evening : midnight;
   return `${prefixEmoji} ${year}/${month}/${day} ${hour}:${minute}:${second}`
 }
