@@ -14,6 +14,7 @@ export interface GlobalState {
     isCollapse: boolean;
     showMenuList: Reactive<Array<any>>;  //暂时先any
     footer: boolean;
+    showMenuListLength: number;
 }
 
 //tabItem 接口定义

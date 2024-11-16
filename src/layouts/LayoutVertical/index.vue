@@ -11,14 +11,23 @@
         </div>
 
       <el-scrollbar>
-        <el-menu
-          :router="false"
-          :collapse="isCollapse"
-          :collapse-transition="false"
-        >
-          <SubMenu :menu-list="menuList"></SubMenu>
-        </el-menu>
+        <div class="menu-container">
+          <el-menu
+              :router="false"
+              :collapse="isCollapse"
+              :collapse-transition="false"
+          >
+            <SubMenu :menu-list="menuList"></SubMenu>
+          </el-menu>
+          <el-button @click="addSubMenuItem" class="centered-button">
+            <el-icon>
+              <component :is="Edit" />
+            </el-icon>
+            <span v-show="!isCollapse">Add new item</span>
+          </el-button>
+        </div>
       </el-scrollbar>
+
 
       </div>
     </el-aside>
@@ -39,21 +48,95 @@
 
     </el-container>
   </el-container>
+
+  <el-dialog
+    v-model="dialogVisible"
+    align-center
+    width="50%"
+    title="Add new item"
+  >
+    <el-form>
+      <el-form-item>
+        <el-select placeholder="选择item添加位置" v-model="itemForm.type">
+          <el-option label="Place in Menu" value="menu"/>
+          <el-option label="Place in Submenu" value="submenu"/>
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <el-form v-model="itemForm">
+      <div v-if="itemForm.type === 'menu'">
+        <el-form-item
+            prop="title"
+            label="Title"
+            :rules="[
+              { required: true, message: 'Please enter the item title', trigger: 'blur' }
+            ]">
+          <el-input v-model="itemForm.title" placeholder="Please enter the item title"/>
+        </el-form-item>
+        <el-form-item prop="index" label="Index" :rules="[
+          { required: true, message: 'Please enter the index', trigger: 'blur' }
+        ]">
+          <el-select v-model="itemForm.index" placeholder="Please choose the index">
+            <el-option
+                v-for="item in showMenuListLength"
+                :label="item"
+                :key="item"
+                :value="item"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="path" label="Path" :rules="[
+          { required: true, message: 'Please enter the path', trigger: 'blur' }
+        ]">
+          <el-input v-model="itemForm.path" placeholder="Please enter the path"/>
+        </el-form-item>
+      </div>
+      <div v-else-if="itemForm.type === 'submenu'">
+        <el-form-item label="Title">
+          <el-input v-model="itemForm.title" placeholder="Please enter the title"/>
+        </el-form-item>
+        <el-form-item label="Path">
+          <el-input v-model="itemForm.path" placeholder="Please enter the path"/>
+        </el-form-item>
+      </div>
+
+    </el-form>
+    <template #footer>
+      <el-button @click="dialogVisible=false">Cancel</el-button>
+      <el-button type="primary" @click="dialogVisible=false">Confirm</el-button>
+    </template>
+
+  </el-dialog>
+
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed , ref } from "vue";
 import {useGlobalStore} from "@/stores/modules/global";
 import {storeToRefs} from "pinia";
-
+import { tempRouter } from "@/router/modules/tempRouter";
 import SubMenu from "@/layouts/Major/Submenu/SubMenu.vue";
 import Main from "@/layouts/Major/Main/index.vue"
 import {Edit} from "@element-plus/icons-vue";
 
-const title = "Dynamic Title"
+const title = import.meta.env.VITE_APP_TITLE
 const globalStore = useGlobalStore();
 //const isCollapse = computed(() => globalStore.isCollapse );
 const {isCollapse} = storeToRefs(globalStore)
+
+const { showMenuListLength } = storeToRefs(globalStore)
+
+const itemForm =ref({
+  type:'',
+  title:'',
+  index:'',
+  path:''
+})
+
+const dialogVisible = ref(false);
+
+function addSubMenuItem(){
+  dialogVisible.value = true;
+}
 
 console.log("Layout isCollapse", isCollapse);
 

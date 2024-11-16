@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import type {GlobalState} from "@/stores/interface";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 
 import {tempRouter} from "@/router/modules/tempRouter";
 
@@ -13,7 +13,7 @@ import Third from "@/components/Project/secondFirst.vue"
 import Blog from "@/views/blog/index.vue"
 
 const MenuList = ref(tempRouter)
-
+const MenuListLength = computed(()=>MenuList.value.length)
 //export default useGlobalStore 的区别
 export const useGlobalStore = defineStore({
     id: 'MyVueBackendProject',
@@ -28,6 +28,8 @@ export const useGlobalStore = defineStore({
         isCollapse:false,
         //子菜单列表
         showMenuList:MenuList.value,
+        //子菜单长度
+        showMenuListLength:MenuListLength.value,
         //页脚
         footer:true,
     }),

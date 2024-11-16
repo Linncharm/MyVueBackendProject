@@ -12,11 +12,21 @@
       transition: width 0.3s ease;
       .el-scrollbar {
         height: calc(100% - 55px);
-        .el-menu {
-          width: 100%;
-          overflow-x: hidden;
-          border-right: none;
+        .menu-container{
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
         }
+          .el-menu {
+            width: 100%;
+            overflow-x: hidden;
+            border-right: none;
+          }
+          .centered-button{
+            margin: 10px 20px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+          }
       }
       .logo {
         box-sizing: border-box;
@@ -26,6 +36,7 @@
           object-fit: contain;
         }
         .logo-text {
+          letter-spacing: 1px;
           margin-left: 6px;
           font-size: 21.5px;
           font-weight: bold;
