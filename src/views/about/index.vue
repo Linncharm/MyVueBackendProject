@@ -60,6 +60,8 @@ const perPage = ref(5);
 
 //总条目数
 const totalRecords = ref(0);
+//是否改变了总条目数
+const isTotalRecordChanged = ref(false);
 
 const octokit = new Octokit({
   //my github token
@@ -116,13 +118,18 @@ async function getCommitInformation(){
       }
     })
 
+  if(!isTotalRecordChanged.value){
     totalRecords.value = resp.headers.link ?
         Number([...resp.headers.link.matchAll(/&page=(\d+)>; rel="last"/g)][0]?.[1]) * perPage.value : 1 ;
     console.log("totalRecords",totalRecords.value)  //10 correctly returned
+    isTotalRecordChanged.value = true;
+  }
 }
+
 
 function resetCommitInformation(){
   currentPage.value = 1;
+  isTotalRecordChanged.value = false;
   getCommitInformation();
 }
 
