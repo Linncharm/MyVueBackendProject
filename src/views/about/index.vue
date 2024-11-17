@@ -30,7 +30,7 @@
           </el-table-column>
           <el-table-column prop="content" label="Content"></el-table-column>
         </el-table>
-        <el-pagination style="margin-top: 10px ; scale: 90%"
+        <el-pagination style="margin-top: 10px ;"
           :page-size="perPage"
           :total="totalRecords"
           :current-page="currentPage"

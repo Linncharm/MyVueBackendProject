@@ -36,7 +36,25 @@ import router from "@/router/index";
 //  const props = defineProps(["menuList"])  const { menuList } = props
 defineProps<{menuList:any}>()  //暂时写成any
 
+import { useTabStores } from "@/stores/modules/tabs";
+import { getFlatMenuList } from "@/utils";
+
+const tabStores = useTabStores();
+
 const changeToMenuItem = (item:any)=>{
+  console.log("changeToMenuItem", item);
+  item.meta.isAffix = true;
+  //globalStore.addTabs(item);
+  //console.log("getFlatMenuList", getFlatMenuList([item])[0]);
+  const tabsParams = {
+    icon: item.meta.icon,
+    title: item.meta.title,
+    path: item.path,
+    name: item.name,
+    close: !item.meta.isAffix
+  }
+  tabStores.addTabs(tabsParams);
+  console.log("tabsMenuList", tabStores.tabsMenuList);
   router.push(item.path)
 }
 

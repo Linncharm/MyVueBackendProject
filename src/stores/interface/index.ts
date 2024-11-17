@@ -17,6 +17,11 @@ export interface GlobalState {
     showMenuListLength: number;
 }
 
+//tabMenu 接口定义
+export interface TabsState {
+    tabsMenuList: TabMenuProps[];
+}
+
 //tabItem 接口定义
 export interface TabMenuProps {
     icon:string;

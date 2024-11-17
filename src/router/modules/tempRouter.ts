@@ -21,7 +21,8 @@ export const tempRouter = [
                 component: () => import('@/views/blog/components/publish.vue'),
                 meta: {
                     title: "Blog Publish",
-                    icon: "DocumentCopy"
+                    icon: "DocumentCopy",
+                    isAffix: false
                 }
             },
             {
@@ -30,13 +31,15 @@ export const tempRouter = [
                 component: () => import('@/views/blog/components/management.vue'),
                 meta: {
                     title: "Blog Management",
-                    icon: "Management"
+                    icon: "Management",
+                    isAffix: false
                 }
             }
         ],
         meta:{
             title:"Blog Management",
-            icon:"DocumentAdd"
+            icon:"DocumentAdd",
+            isAffix: false
         }
     },
     {
@@ -50,7 +53,8 @@ export const tempRouter = [
                 component:First,
                 meta:{
                     icon:"Files",
-                    title:"First"
+                    title:"First",
+                    isAffix: false
                 }
             },
             {
@@ -64,19 +68,22 @@ export const tempRouter = [
                         component:Third,
                         meta:{
                             icon:"Files",
-                            title:"Second-first"
+                            title:"Second-first",
+                            isAffix: false
                         }
                     }
                 ],
                 meta:{
                     title: "Second",
-                    icon:"Folder"
+                    icon:"Folder",
+                    isAffix: false
                 }
             },
         ],
         meta: {
             icon:"CirclePlus",
-            title: "Project"
+            title: "Project",
+            isAffix: false
         }
     },
 
@@ -86,7 +93,8 @@ export const tempRouter = [
         component:Home,
         meta:{
             title:"Home",
-            icon:"HomeFilled"
+            icon:"HomeFilled",
+            isAffix:true
         }
     },
     {
@@ -95,7 +103,8 @@ export const tempRouter = [
         component:About,
         meta: {
             title:"About",
-            icon:"Star"
+            icon:"Star",
+            isAffix: false
         }
     }
 ]

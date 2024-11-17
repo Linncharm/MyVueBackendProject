@@ -1,10 +1,10 @@
 import {defineStore} from "pinia";
 import router from "@/router";
-import type TabMenuProps from "@/stores/interface";
+import type { TabMenuProps , TabsState } from "@/stores/interface";
 
 export const useTabStores = defineStore({
     id:"linncharm-tabs",
-    state:()=>({
+    state:():TabsState=>({
         tabsMenuList:[],
     }),
     actions:{

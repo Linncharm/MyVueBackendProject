@@ -2,7 +2,7 @@ import {defineStore} from "pinia";
 import type {GlobalState} from "@/stores/interface";
 import {computed, ref} from "vue";
 
-import {tempRouter} from "@/router/modules/tempRouter";
+import { tempRouter } from "@/router/modules/tempRouter";
 
 import Home from "@/views/home/index.vue"
 import About from "@/views/about/index.vue"
@@ -45,8 +45,11 @@ export const useGlobalStore = defineStore({
         //设置子菜单列表
         addMenuItem(item:object, index:number) {
             this.showMenuList.splice(index, 0, item);
+        },
+        //设置tab菜单列表
+        addTabs(tabItem:object){
+            this.showMenuList.push(tabItem);
         }
-
 
     }
 })
