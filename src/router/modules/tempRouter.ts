@@ -5,20 +5,23 @@ import First from "@/components/Project/first.vue";
 import Second from "@/components/Project/second.vue";
 import Third from "@/components/Project/secondFirst.vue";
 import About from "@/views/about/index.vue";
+
+import Publish from "@/views/blog/components/publish.vue";
+import Management from "@/views/blog/components/management.vue";
 //这里pinia还没有启动，不能从global引入路由
 
 export const tempRouter = [
     //关于嵌套路由的sample，用于检测menuList能否成功遍历
     {
-        path:'/blog/index',
+        path:'/blog',
         name:"blog",
-        component: Blog,
+        component: Publish,
         redirect: '/blog/publish',
         children: [
             {
                 path: '/blog/publish',
                 name: 'publish',
-                component: () => import('@/views/blog/components/publish.vue'),
+                component: Publish,
                 meta: {
                     title: "Blog Publish",
                     icon: "DocumentCopy",
@@ -28,7 +31,7 @@ export const tempRouter = [
             {
                 path: '/blog/management',
                 name: 'management',
-                component: () => import('@/views/blog/components/management.vue'),
+                component: Management,
                 meta: {
                     title: "Blog Management",
                     icon: "Management",

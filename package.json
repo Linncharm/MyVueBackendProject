@@ -25,6 +25,7 @@
     "pinia-plugin-persistedstate": "^4.1.2",
     "stores": "^1.0.0",
     "typed.js": "^2.1.0",
+    "vditor": "^3.10.7",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
     "vue-typer": "^1.2.0"
