@@ -34,14 +34,14 @@
 
     <el-container>
       <el-header>
-        <el-button
-            type="text"
+        <el-link
+            type="primary"
             @click="isCollapse=!isCollapse"
         >
           <el-icon class="btn-icon">
             <component :is="isCollapse?'DArrowRight':'DArrowLeft'" />
           </el-icon>
-        </el-button>
+        </el-link>
       </el-header>
 
       <Main/>
@@ -121,6 +121,10 @@ const {isCollapse} = storeToRefs(globalStore)
 const { showMenuListLength } = storeToRefs(globalStore)
 
 const formRef = ref<FormInstance>()
+
+/*const confirmButton = {
+  type: 'primary',
+}*/
 
 const itemForm =reactive({
   type:'',

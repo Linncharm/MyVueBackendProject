@@ -1,0 +1,97 @@
+[
+  {
+    "path": "/blog",
+    "name": "blog",
+    "children": [
+      {
+        "path": "/blog/publish",
+        "name": "publish",
+        "component": "Publish",
+        "meta": {
+          "title": "Blog Publish",
+          "icon": "DocumentCopy",
+          "isAffix": "False"
+        }
+      },
+      {
+        "path": "/blog/management",
+        "name": "management",
+        "component": "Management",
+        "meta": {
+          "title": "Blog Management",
+          "icon": "Management",
+          "isAffix": "False"
+        }
+      }
+    ],
+    "meta": {
+      "title": "Blog",
+      "icon": "DocumentAdd",
+      "isAffix": "False"
+    }
+  },
+  {
+    "path": "/project",
+    "name": "project",
+    "redirect": "/project/First",
+    "children": [
+      {
+        "path": "/project/first",
+        "name": "First",
+        "component": "First",
+        "meta": {
+          "icon": "Files",
+          "title": "First",
+          "isAffix": "False"
+        }
+      },
+      {
+        "path": "/project/second",
+        "name": "Second",
+        "component": "Second",
+        "children": [
+          {
+            "path": "/project/second/second-first",
+            "name": "Second-First",
+            "component": "Third",
+            "meta": {
+              "icon": "Files",
+              "title": "Second-first",
+              "isAffix": "False"
+            }
+          }
+        ],
+        "meta": {
+          "title": "Second",
+          "icon": "Folder",
+          "isAffix": "False"
+        }
+      }
+    ],
+    "meta": {
+      "icon": "CirclePlus",
+      "title": "Project",
+      "isAffix": "False"
+    }
+  },
+  {
+    "path": "/home/index/",
+    "name": "home",
+    "component": "Home",
+    "meta": {
+      "title": "Home",
+      "icon": "HomeFilled",
+      "isAffix": "True"
+    }
+  },
+  {
+    "path": "/about/index",
+    "name": "about",
+    "component": "About",
+    "meta": {
+      "title": "About",
+      "icon": "Star",
+      "isAffix": "False"
+    }
+  }
+]

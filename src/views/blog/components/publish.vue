@@ -1,7 +1,16 @@
 <template>
   <div class="vditor-container">
     <div id="vditor"></div>
+    <el-dialog
+        title="发布文章"
+        :visible="blogDialogVisible"
+        width="80%"
+    >
+
+    </el-dialog>
   </div>
+
+
 </template>
 
 <script setup>
@@ -28,6 +37,19 @@ onMounted(() => {
     width: "100%",
     mode: "sv",
     toolbar: [
+      {
+        name: "customize",
+        tip: "发布文章",
+
+        className: "right",
+        //icon的svg设置，直接从svg文件里面复制即可
+        icon: '<?xml version="1.0" ?><svg height="32" viewBox="-3 3 40 40" width="32" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h48v48h-48z" fill="none"/><path d="M10 8v4h28v-4h-28zm0 20h8v12h12v-12h8l-14-14-14 14z"/></svg>',
+        click: () => {
+          //需要用div包裹el-dialog，否则会报错，因为组件根节点为非dom节点
+          blogDialogVisible.value = true;
+        },
+      },
+      "|",
       "emoji",
       "headings",
       "bold",
@@ -109,6 +131,9 @@ onMounted(() => {
   //vditor.setTheme("dark");
 });
 //vditor.setTheme("dark");
+
+const blogDialogVisible = ref(false);
+
 </script>
 
 <style>

@@ -5,6 +5,8 @@ import {ElMessage} from "element-plus";
 import {useRouter} from "vue-router";
 
 
+
+
 export const initDynamicRouter = (msg:number) => {
     const userStore = useUserStore();
 

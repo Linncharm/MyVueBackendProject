@@ -48,7 +48,7 @@ const getBlogInformationState = ref(false);
 const blogSelect = ref('选择文章发布状态')
 
 function createBlog() {
-  router.push('/layout/blog/publish')
+  router.push('/blog/publish')
 }
 
 async function requestBlogInformation(){

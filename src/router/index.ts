@@ -5,6 +5,7 @@ import {LOGIN_URL} from "@/config/constants";
 import {staticRouter,errorRouter} from "@/router/modules/staticRouter";
 import {tempRouter} from "@/router/modules/tempRouter";
 
+
 const router = createRouter({
   history: createWebHistory(),
   // [...]为展开语法，适合将多个数组合并
