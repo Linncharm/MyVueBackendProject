@@ -9,3 +9,36 @@
   }
 }
 
+.blog-management-container{
+  height: 100%;
+  width: 100%;
+  .blog-radio-group{
+    margin-bottom: 10px;
+    scale: 110%;
+    margin-left: 10px
+  }
+  .blog-filter-group{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap: 20px;
+    margin-bottom: 10px;
+    .blog-select{
+      width: 20%;
+    }
+    .blog-button-group{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 10px;
+    }
+  }
+  .blog-table{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: space-between;
+  }
+}

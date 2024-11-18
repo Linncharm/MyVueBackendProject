@@ -23,6 +23,7 @@ export const staticRouter=[
         path:'/layout',
         component:()=>import("@/layouts/index.vue"),
         redirect:HOME_URL,
+        //存在暂时性死区问题，待解决
         children:tempRouter,
     }
 ]

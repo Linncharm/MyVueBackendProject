@@ -15,8 +15,8 @@ export const tempRouter = [
     {
         path:'/blog',
         name:"blog",
-        component: Publish,
-        redirect: '/blog/publish',
+        //component: Blog,
+        //redirect: '/blog/publish',
         children: [
             {
                 path: '/blog/publish',
@@ -40,7 +40,7 @@ export const tempRouter = [
             }
         ],
         meta:{
-            title:"Blog Management",
+            title:"Blog",
             icon:"DocumentAdd",
             isAffix: false
         }
