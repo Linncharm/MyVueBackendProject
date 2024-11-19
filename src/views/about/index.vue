@@ -125,6 +125,8 @@ async function getCommitInformation(){
           'X-GitHub-Api-Version': '2022-11-28'
         },
       })
+
+      if(resp.status === 403)  console.error("403 Forbidden 错误：可能是速率限制或权限不足导致。");
       // .then(()=>{
       //   console.log("respData",resp)
       // })
@@ -149,9 +151,14 @@ async function getCommitInformation(){
               })
             }
           }
-      }catch (e) {
+      }
+      catch (e) {
+        getCommitInformationState.value = false;
         ElMessage.error("Repo information went wrong")
-      }finally {
+        NProgress.done();
+        console.error("github api went wrong",e)
+      }
+      finally {
         //若为undefined说明已经加载过了
         console.log("respRepo",respRepo)
         try{
@@ -162,9 +169,14 @@ async function getCommitInformation(){
               'X-GitHub-Api-Version': '2022-11-28'
             }
           })
-        }catch (e) {
+        }
+        catch (e) {
+          getCommitInformationState.value = false;
           ElMessage.error("Branch information went wrong")
-        }finally {
+          NProgress.done();
+          console.error("github api went wrong",e)
+        }
+        finally {
           console.log("respBranch",respBranch)
         }
       }
@@ -181,21 +193,25 @@ async function getCommitInformation(){
       }
     })
 
-    //获取repo信息
+  //获取repo信息,根据 create-time 降序排序,同时去除不是自己的项目
   if(repoData.value.length === 0){
-    repoData.value = respRepo.data.map((item:any) => {
-      return {
-        name:item.name,
-      }
-    })
+    repoData.value = respRepo.data
+        .sort((a: any, b: any) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+        .filter((item:any) => !item.fork)
+        .map((item: any) => {
+          return {
+            name: item.name,
+          };
+        });
   }
 
-    //获取branch信息
+    //获取repo信息
     branchData.value = respBranch.data.map((item:any) => {
       return {
         name:item.name,
       }
     })
+
 
 
   //获取总条目数
