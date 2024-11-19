@@ -2,13 +2,34 @@
   <div class="about-main">
     <div class="about-information">
       <el-card>
-        <p>111</p>
       </el-card>
     </div>
     <div class="about-latest-commit">
       <el-card class="committer-body">
         <div class="committer-title">
           <span> 🍉 Show the latest 5 records of commit </span>
+
+          <el-tooltip content="Backend Project repository set as default" placement="top">
+            <el-select class="branch-select" placeholder="Select repo" v-model="repoInformation">
+              <el-option
+                  v-for="item in repoData"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
+              />
+            </el-select>
+          </el-tooltip>
+          <el-tooltip content="Main branch set as default" placement="top">
+            <el-select class="branch-select" placeholder="Select branch" v-model="commitBranchInformation">
+              <el-option
+                v-for="item in branchData"
+                :key="item.name"
+                :value="item.name"
+                :label="item.name"
+              />
+            </el-select>
+          </el-tooltip>
+
           <el-button class="committer-button" @click="resetCommitInformation">
             <span>Reset</span>
             <el-icon style="margin-left: 2px" :class="getCommitInformationState ? 'is-loading' : '' ">
@@ -47,19 +68,23 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted , ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import { Octokit } from "octokit";
 import {Refresh} from "@element-plus/icons-vue";
 import NProgress from "@/config/nprogress";
 import { ElMessage } from "element-plus";
 
 const tableData = ref([]);
+const repoData = ref([]);
+const branchData = ref([]);
 
 const currentPage = ref(1);
 const perPage = ref(5);
 
 //总条目数
 const totalRecords = ref(0);
+
+const repoInformation = ref('');
 //是否改变了总条目数
 const isTotalRecordChanged = ref(false);
 
@@ -70,6 +95,8 @@ const octokit = new Octokit({
     timeout: 500
   }
 })
+
+const commitBranchInformation = ref('');
 
 const getCommitInformationState = ref(false);
 
@@ -83,12 +110,15 @@ async function getCommitInformation(){
     //不能使用const resp = ...
     //The resp variable is declared inside the try block, so it is not accessible in the finally block
     let resp:any;
+    let respRepo:any;
+    let respBranch:any;
     try{
       getCommitInformationState.value = true;
       NProgress.start();
       resp = await octokit.request('GET /repos/{owner}/{repo}/commits',{
         owner:'Linncharm',
-        repo:'MyVueBackendProject',
+        repo: repoInformation.value || 'MyVueBackendProject',
+        sha:commitBranchInformation.value || 'main',
         per_page:perPage.value,
         page:currentPage.value,
         headers: {
@@ -98,17 +128,45 @@ async function getCommitInformation(){
       // .then(()=>{
       //   console.log("respData",resp)
       // })
-    }catch (e){
+    }
+    catch (e){
       getCommitInformationState.value = false;
       ElMessage.error("Check the network")
       NProgress.done();
       console.error("github api went wrong",e)
-    }finally {
-      getCommitInformationState.value = false;
-      NProgress.done();
+    }
+    finally {
       console.log("respData",resp)
+      getCommitInformationState.value = false;
+      try {
+        //如何只让这个加载一次？
+          respRepo = await octokit.request('GET /users/Linncharm/repos', {
+            headers: {
+              'X-GitHub-Api-Version': '2022-11-28'
+            }
+          })
+      }catch (e) {
+        ElMessage.error("Repo information went wrong")
+      }finally {
+        console.log("respRepo",respRepo)
+        try{
+          respBranch = await octokit.request('GET /repos/{owner}/{repo}/branches', {
+            owner: 'Linncharm',
+            repo: repoInformation.value || 'MyVueBackendProject',
+            headers: {
+              'X-GitHub-Api-Version': '2022-11-28'
+            }
+          })
+        }catch (e) {
+          ElMessage.error("Branch information went wrong")
+        }finally {
+          console.log("respBranch",respBranch)
+        }
+      }
+      NProgress.done();
     }
 
+    //获取commit信息
     tableData.value = resp.data.map((item:any) => {
       return {
         date: convertDate(item.commit.committer.date),
@@ -118,12 +176,29 @@ async function getCommitInformation(){
       }
     })
 
+    //获取repo信息
+    repoData.value = respRepo.data.map((item:any) => {
+      return {
+        name:item.name,
+      }
+    })
+
+    //获取branch信息
+    branchData.value = respBranch.data.map((item:any) => {
+      return {
+        name:item.name,
+      }
+    })
+
+
+  //获取总条目数
   if(!isTotalRecordChanged.value){
     totalRecords.value = resp.headers.link ?
         Number([...resp.headers.link.matchAll(/&page=(\d+)>; rel="last"/g)][0]?.[1]) * perPage.value : 1 ;
     console.log("totalRecords",totalRecords.value)  //10 correctly returned
     isTotalRecordChanged.value = true;
   }
+
 }
 
 
@@ -132,6 +207,13 @@ function resetCommitInformation(){
   isTotalRecordChanged.value = false;
   getCommitInformation();
 }
+
+watch(
+    ()=>repoInformation.value + commitBranchInformation.value,
+    ()=>{
+      resetCommitInformation();
+    }
+)
 
 onMounted(()=>{
   getCommitInformation();

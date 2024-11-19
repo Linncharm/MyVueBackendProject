@@ -3,7 +3,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
   flex:1;
   .el-card{
     display: flex;
@@ -22,6 +22,10 @@
   justify-content: flex-start;
   align-items:center;
   padding-bottom: 15px;
+  gap: 15px;
+  .branch-select{
+    width: 200px;
+  }
   .committer-button{
     margin-left: 15px;
     scale: 100%;
