@@ -88,7 +88,7 @@ It will creat a .git directory with git configure in secret, and initialize it a
 ```
 
 ## 🔴🔴 Some Emergency Error
-## When there is a time pushing the commit to remote repo, it will show the error like this
+## 1. When there is a time pushing the commit to remote repo, it will show the error like this
 ```shell
 fatal: unable to access 'https://github.com/xxxx': 
 Failed to connect to github.com port 443 after 21039 ms: 
@@ -107,4 +107,20 @@ Could not connect to server
 or batch operation
 ```shell
     for /f "tokens=5" %a in ('netstat -aon ^| findstr "443"') do taskkill /F /PID %a
+```
+## 2. "Could not connect to server" problem when push the commit
+```shell
+fatal: unable to access 'https://github.com/Linncharm/xxxxxx': 
+Failed to connect to github.com port 443 after 21097 ms: Could not connect to server
+```
+### Solution
+- 1. Cancel the http/https proxy setting of git
+```shell
+    git config --global --unset http.proxy
+    git config --global --unset https.proxy
+```
+- 2. Modify the git port same as local port
+![img.png](png/proxy.png)
+```shell
+    git config --global http.proxy http://127.0.0.1:4780
 ```
