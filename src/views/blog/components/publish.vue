@@ -8,13 +8,16 @@
         height="90%"
     >
       <span>This is a message</span>
-        <el-form :model="blogPublishForm" class="blog-publish-form">
-          <el-form-item>
+        <el-form :model="blogPublishForm" class="blog-publish-form" :rules="blogPublishFormRules">
             <div class="blog-publish-form-input-group">
-              <el-input v-model="blogPublishForm.title" placeholder="请输入文章标题" style="width: 45%; margin-top: 10px"></el-input>
-              <el-input v-model="blogPublishForm.author" placeholder="请输入文章作者" style="width: 45%; margin-top: 10px"></el-input>
-              <el-input v-model="blogPublishForm.description" placeholder="请输入文章描述" style="width: 45%; margin-top:10px"></el-input>
-              <el-input v-model="blogPublishForm.remark" placeholder="请输入文章备注" style="width: 45%; margin-top: 10px"></el-input>
+              <el-form-item
+                  v-for="(item,index) in formOption"
+                  :key="item.prop"
+                  :prop="item.prop"
+                  style="width: 45%; margin-top: 10px"
+              >
+                <el-input v-model="blogPublishForm[item.model]" :placeholder="item.placeholder"></el-input>
+              </el-form-item>
               <el-select
                   style="width: 45%; margin-top: 10px"
                   placeholder="请选择文章分类"
@@ -45,13 +48,13 @@
                 </template>
               </el-select>
             </div>
-          </el-form-item>
+
         </el-form>
 
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="blogDialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="blogDialogVisible = false">
+          <el-button type="primary" @click="saveToList">
             Confirm
           </el-button>
         </div>
@@ -99,7 +102,7 @@
         </div>
       <template #footer>
         <div class="addTag-dialog-footer">
-          <el-button @click="blogDialogVisible = false">Cancel</el-button>
+          <el-button @click="addTagVisible = false">Cancel</el-button>
           <el-button type="primary" @click="addTagConfirm">
             Confirm
           </el-button>
@@ -118,7 +121,20 @@ import "vditor/dist/index.css";
 import {DocumentAdd, Minus, Plus, Setting} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
+const blogPublishFormRules = reactive({
+  title: [
+    { required: true, message: "请输入文章标题", trigger: "blur" },
+  ],
+})
+
 const  tagFormNumber = ref(1)
+
+const formOption = reactive([
+    { prop: "title", placeholder: "请输入文章标题", model: "blogPublishForm.title" },
+    { prop: "author", placeholder: "请输入文章作者", model: "blogPublishForm.author" },
+    { prop: "description", placeholder: "请输入文章描述", model: "blogPublishForm.description" },
+    { prop: "remark", placeholder: "请输入文章备注", model: "blogPublishForm.remark" },
+])
 
 function modifiedTagFormNumber(num){
   if(num===-1 && tagFormNumber.value===1) {
@@ -135,6 +151,10 @@ function modifiedTagFormNumber(num){
 
 const tempTagsStorage = ref([])
 const tagStorage = ref(['默认标签']);
+
+function saveToList(){
+  blogDialogVisible.value = false
+}
 
 function addTagConfirm() {
   tagStorage.value = Array.from(new Set([...tagStorage.value, ...tempTagsStorage.value]));
