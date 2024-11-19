@@ -7,6 +7,17 @@
     align-items: center;
   #vditor{
   }
+  .blog-publish-form{
+    margin-top: 10px;
+  }
+  .blog-publish-form-input-group{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap:wrap;
+    flex-grow: 1;
+    align-items: center
+  }
 }
 
 .blog-management-container{

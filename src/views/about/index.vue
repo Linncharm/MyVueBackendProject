@@ -11,7 +11,7 @@
           <span> 🍉 Show the latest 5 records of commit </span>
           <el-button class="committer-button" @click="resetCommitInformation">
             <span>Reset</span>
-            <el-icon style="margin-left: 1.5px" :class="getCommitInformationState ? 'is-loading' : '' ">
+            <el-icon style="margin-left: 2px" :class="getCommitInformationState ? 'is-loading' : '' ">
               <Refresh/>
             </el-icon>
           </el-button>

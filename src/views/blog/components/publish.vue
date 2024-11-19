@@ -8,11 +8,34 @@
         height="90%"
     >
       <span>This is a message</span>
-        <el-form :model="blogPublishForm" style="margin-top: 10px">
+        <el-form :model="blogPublishForm" class="blog-publish-form">
           <el-form-item>
-            <div style="display: flex;flex-direction: row;justify-content: space-around;flex-grow: 1;align-items: center">
-              <el-input v-model="blogPublishForm.title" placeholder="请输入文章标题" style="width: 45%;"></el-input>
-              <el-input v-model="blogPublishForm.author" placeholder="请输入文章作者" style="width: 45%;"></el-input>
+            <div class="blog-publish-form-input-group">
+              <el-input v-model="blogPublishForm.title" placeholder="请输入文章标题" style="width: 45%; margin-top: 10px"></el-input>
+              <el-input v-model="blogPublishForm.author" placeholder="请输入文章作者" style="width: 45%; margin-top: 10px"></el-input>
+              <el-input v-model="blogPublishForm.description" placeholder="请输入文章描述" style="width: 45%; margin-top:10px"></el-input>
+              <el-input v-model="blogPublishForm.remark" placeholder="请输入文章备注" style="width: 45%; margin-top: 10px"></el-input>
+              <el-select
+                  style="width: 45%; margin-top: 10px"
+                  placeholder="请选择文章分类"
+                  v-model="blogPublishForm.category"
+              >
+                <el-option value="zh" label="中文文章"></el-option>
+                <el-option value="en" label="英文文章"></el-option>
+              </el-select>
+              <el-select
+                  style="width: 45%; margin-top: 10px"
+                  placeholder="请选择文章标签"
+                  multiple
+                  collapse-tags
+                  collapse-tags-tooltip
+              >
+                <template #footer>
+                  <el-button text bg size="small" @click="onAddOption">
+
+                  </el-button>
+                </template>
+              </el-select>
             </div>
           </el-form-item>
         </el-form>
@@ -25,6 +48,12 @@
           </el-button>
         </div>
       </template>
+    </el-dialog>
+    <el-dialog
+      title="添加标签"
+      v-model="addTagVisible"
+    >
+
     </el-dialog>
   </div>
 
@@ -42,6 +71,8 @@ const blogPublishForm = reactive({
   author: "",
   description: "",
   tags: [],
+
+  remark:"",
   category: "",
   content: "",
 })
@@ -57,7 +88,14 @@ defineProps({
 
 defineEmits(["update:content"]);
 
-onMounted(() => {
+const blogDialogVisible = ref(false);
+const addTagVisible = ref(false)
+
+function onAddOption(){
+  addTagVisible.value=true
+}
+
+function loadVditor() {
   console.log("Vditor mounted");
   const vditor = new Vditor("vditor", {
     height: "90%",
@@ -138,7 +176,7 @@ onMounted(() => {
         },
       }*/
     ],
-    preview:{
+    preview: {
       //预览 debounce 毫秒间隔
       delay: delay.value,
       mode: "both",
@@ -146,7 +184,7 @@ onMounted(() => {
       actions: ["desktop"],
       theme: {}
     },
-    counter:{
+    counter: {
       enable: true,
     },
     resize: {
@@ -155,14 +193,10 @@ onMounted(() => {
     },
     theme: "classic",
   });
-
+}
   //vditor.setTheme("dark");
   //setTipPositionForAllTools(toolbar, 's');
-});
 //vditor.setTheme("dark");
-
-const blogDialogVisible = ref(false);
-
 /*
 
 const setTipPositionForAllTools = (tools, position) => {
@@ -175,6 +209,11 @@ const setTipPositionForAllTools = (tools, position) => {
   console.log("setTipPositionForAllTools", tools);
 };
 */
+
+
+onMounted(() => {
+  loadVditor();
+})
 
 </script>
 
