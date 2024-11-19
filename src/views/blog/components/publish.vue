@@ -26,13 +26,21 @@
               <el-select
                   style="width: 45%; margin-top: 10px"
                   placeholder="请选择文章标签"
+                  v-model="blogPublishForm.tags"
                   multiple
-                  collapse-tags
-                  collapse-tags-tooltip
               >
+                <el-option v-for="item in tagStorage"
+                  :label="item"
+                  :value="item"
+                >
+
+                </el-option>
                 <template #footer>
                   <el-button text bg size="small" @click="onAddOption">
-
+                    <span> 添加一个标签 </span>
+                    <el-icon style="margin-left: 5px">
+                      <DocumentAdd/>
+                    </el-icon>
                   </el-button>
                 </template>
               </el-select>
@@ -52,8 +60,51 @@
     <el-dialog
       title="添加标签"
       v-model="addTagVisible"
+      width="40%"
+      align-center
     >
+      <template #header>
+        <div style="display: flex;flex-direction:row;justify-content: center">
+          <span> 添加标签 </span>
+        </div>
 
+      </template>
+        <div class="addTagForm" v-for="(item,index) in tagFormNumber">
+          <div class="addTagRowGroup" :key="index">
+            <el-input
+                style="width: 60%;"
+                placeholder="添加标签"
+                v-model="tempTagsStorage[index]"
+                maxlength="10"
+                show-word-limit
+            >
+
+            </el-input>
+            <el-tooltip content="增加新输入框">
+              <el-button @click="modifiedTagFormNumber(1)">
+                <el-icon>
+                  <Plus/>
+                </el-icon>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip content="减少新输入框">
+              <el-button @click="modifiedTagFormNumber(-1)" style="margin-left: 0">
+                <el-icon>
+                  <Minus/>
+                </el-icon>
+              </el-button>
+            </el-tooltip>
+
+          </div>
+        </div>
+      <template #footer>
+        <div class="addTag-dialog-footer">
+          <el-button @click="blogDialogVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="addTagConfirm">
+            Confirm
+          </el-button>
+        </div>
+      </template>
     </el-dialog>
   </div>
 
@@ -64,9 +115,34 @@
 import {onMounted, reactive, ref} from "vue";
 import Vditor from "vditor";
 import "vditor/dist/index.css";
-import { Setting } from "@element-plus/icons-vue";
+import {DocumentAdd, Minus, Plus, Setting} from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 
-const blogPublishForm = reactive({
+const  tagFormNumber = ref(1)
+
+function modifiedTagFormNumber(num){
+  if(num===-1 && tagFormNumber.value===1) {
+    ElMessage.warning('不能再删除了！');
+    return;
+  }
+  if(num===1 && tagFormNumber.value >= 5) {
+    ElMessage.warning('不能再添加了！');
+    return;
+  }
+
+  tagFormNumber.value += num
+}
+
+const tempTagsStorage = ref([])
+const tagStorage = ref(['默认标签']);
+
+function addTagConfirm() {
+  tagStorage.value = Array.from(new Set([...tagStorage.value, ...tempTagsStorage.value]));
+  tempTagsStorage.value = []; // Clear tempTagsStorage
+  addTagVisible.value = false;
+}
+
+const blogPublishForm = ref({
   title: "",
   author: "",
   description: "",

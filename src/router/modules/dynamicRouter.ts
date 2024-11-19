@@ -12,10 +12,10 @@ export const initDynamicRouter = (msg:number) => {
 
     try {
         if(userStore.token != ""){
-            ElMessage.success(msg)
+            ElMessage.success(String(msg))
             router.push(HOME_URL);
         }else {
-            ElMessage.error(msg);
+            ElMessage.error(String(msg));
             userStore.setToken("");
             router.replace(LOGIN_URL);
         }
