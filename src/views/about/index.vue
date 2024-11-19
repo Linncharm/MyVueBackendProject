@@ -140,14 +140,19 @@ async function getCommitInformation(){
       getCommitInformationState.value = false;
       try {
         //如何只让这个加载一次？
-          respRepo = await octokit.request('GET /users/Linncharm/repos', {
-            headers: {
-              'X-GitHub-Api-Version': '2022-11-28'
+          if(repoData.value.length === 0){
+            if(!respRepo){
+              respRepo = await octokit.request('GET /users/Linncharm/repos', {
+                headers: {
+                  'X-GitHub-Api-Version': '2022-11-28'
+                }
+              })
             }
-          })
+          }
       }catch (e) {
         ElMessage.error("Repo information went wrong")
       }finally {
+        //若为undefined说明已经加载过了
         console.log("respRepo",respRepo)
         try{
           respBranch = await octokit.request('GET /repos/{owner}/{repo}/branches', {
@@ -177,11 +182,13 @@ async function getCommitInformation(){
     })
 
     //获取repo信息
+  if(repoData.value.length === 0){
     repoData.value = respRepo.data.map((item:any) => {
       return {
         name:item.name,
       }
     })
+  }
 
     //获取branch信息
     branchData.value = respBranch.data.map((item:any) => {
