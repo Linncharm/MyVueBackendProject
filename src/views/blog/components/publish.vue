@@ -8,10 +8,15 @@
         height="90%"
     >
       <span>This is a message</span>
-        <el-form :model="blogPublishForm" class="blog-publish-form" :rules="blogPublishFormRules">
+        <el-form
+            :model="blogPublishForm"
+            class="blog-publish-form"
+            :rules="blogPublishFormRules"
+            ref="blogFormRef"
+        >
             <div class="blog-publish-form-input-group">
               <el-form-item
-                  v-for="(item,index) in formOption"
+                  v-for="item in formOption"
                   :key="item.prop"
                   :prop="item.prop"
                   style="width: 45%; margin-top: 10px"
@@ -114,26 +119,51 @@
 
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { FormInstance , FormRules } from "element-plus";
 import {onMounted, reactive, ref} from "vue";
 import Vditor from "vditor";
 import "vditor/dist/index.css";
 import {DocumentAdd, Minus, Plus, Setting} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
-const blogPublishFormRules = reactive({
+interface blogItemFormRule {
+  title:string;
+  author:string;
+  description?:string;
+  tags:string[];
+  remark?:string;
+  category:string;
+}
+
+const blogFormRef = ref<FormInstance>()
+
+const blogPublishForm = reactive<blogItemFormRule>({
+  title: "",
+  author: "",
+  description: "",
+  remark:"",
+  category: "",
+  tags: [],
+})
+
+
+const blogPublishFormRules = reactive<FormRules<blogItemFormRule>>({
   title: [
     { required: true, message: "请输入文章标题", trigger: "blur" },
+  ],
+  author: [
+    { required: true, message: "请输入文章作者", trigger: "blur" },
   ],
 })
 
 const  tagFormNumber = ref(1)
 
 const formOption = reactive([
-    { prop: "title", placeholder: "请输入文章标题", model: "blogPublishForm.title" },
-    { prop: "author", placeholder: "请输入文章作者", model: "blogPublishForm.author" },
-    { prop: "description", placeholder: "请输入文章描述", model: "blogPublishForm.description" },
-    { prop: "remark", placeholder: "请输入文章备注", model: "blogPublishForm.remark" },
+    { prop: "title", placeholder: "请输入文章标题", model: "title" },
+    { prop: "author", placeholder: "请输入文章作者", model: "author" },
+    { prop: "description", placeholder: "请输入文章描述", model: "description" },
+    { prop: "remark", placeholder: "请输入文章备注", model: "remark" },
 ])
 
 function modifiedTagFormNumber(num){
@@ -161,17 +191,6 @@ function addTagConfirm() {
   tempTagsStorage.value = []; // Clear tempTagsStorage
   addTagVisible.value = false;
 }
-
-const blogPublishForm = ref({
-  title: "",
-  author: "",
-  description: "",
-  tags: [],
-
-  remark:"",
-  category: "",
-  content: "",
-})
 
 const delay = ref(100);
 

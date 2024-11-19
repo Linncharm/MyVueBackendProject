@@ -64,27 +64,31 @@
         </el-select>
       </el-form-item>
     </el-form>
+    <!--        注意！不能使用v-model 必须使用 :model -->
     <el-form
         ref="formRef"
-        v-model="itemForm"
+        :model="itemForm"
         :rules="itemFormRules"
         v-if="itemForm.type === 'menu'">
-      <el-form-item prop="title" label="Title" >
-        <el-input v-model="itemForm.title" placeholder="Please enter the item title"/>
-      </el-form-item>
-      <el-form-item prop="index" label="Index">
-        <el-select v-model="itemForm.index" placeholder="Please choose the index (The place put item)">
-          <el-option
-              v-for="(item,index) in showMenuListLength+1"
-              :label="index"
-              :key="item"
-              :value="index"/>
-        </el-select>
-      </el-form-item>
-      <el-form-item prop="path" label="Path">
-        <el-input v-model="itemForm.path" placeholder="Please enter the path"/>
-      </el-form-item>
+
+        <el-form-item prop="title" label="Title" >
+          <el-input v-model="itemForm.title" placeholder="Please enter the item title"></el-input>
+        </el-form-item>
+        <el-form-item prop="index" label="Index">
+          <el-select v-model="itemForm.index" placeholder="Please choose the index (The place put item)">
+            <el-option
+                v-for="(item,index) in showMenuListLength+1"
+                :label="index"
+                :key="item"
+                :value="index"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="path" label="Path">
+          <el-input v-model="itemForm.path" placeholder="Please enter the path"></el-input>
+        </el-form-item>
     </el-form>
+
     <el-form v-else-if="itemForm.type === 'submenu'">
         <el-form-item label="Title">
           <el-input v-model="itemForm.title" placeholder="Please enter the title"/>
@@ -104,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FormInstance } from "element-plus"
+import type { FormInstance , FormRules } from "element-plus"
 import {computed, reactive, ref} from "vue";
 import {useGlobalStore} from "@/stores/modules/global";
 import {storeToRefs} from "pinia";
@@ -112,6 +116,13 @@ import { tempRouter } from "@/router/modules/tempRouter";
 import SubMenu from "@/layouts/Major/Submenu/SubMenu.vue";
 import Main from "@/layouts/Major/Main/index.vue"
 import {Edit} from "@element-plus/icons-vue";
+
+interface ItemFormRule {
+  type: string;
+  title: string;
+  index: string;
+  path: string;
+}
 
 const title = import.meta.env.VITE_APP_TITLE
 const globalStore = useGlobalStore();
@@ -126,18 +137,18 @@ const formRef = ref<FormInstance>()
   type: 'primary',
 }*/
 
-const itemForm =reactive({
+const itemForm = reactive<ItemFormRule>({
   type:'',
   title:'',
   index:'',
   path:''
 })
 
-const itemFormRules ={
+const itemFormRules = reactive<FormRules<ItemFormRule>>({
   title: [{ required: true, message: 'Please enter the item title', trigger: 'blur' }],
   index: [{ required: true, message: 'Please enter the index', trigger: 'change' }],
   path: [{ required: true, message: 'Please enter the path', trigger: 'blur' }]
-}
+})
 
 const dialogVisible = ref(false);
 const handleClosed = (done: ()=>void)=> {
