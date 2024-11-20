@@ -1,7 +1,7 @@
 <template>
   <div class="vditor-container">
     <div id="vditor"></div>
-    <el-dialog
+<!--    <el-dialog
         title="保存文章"
         v-model="blogDialogVisible"
         width="80%"
@@ -64,19 +64,31 @@
           </el-button>
         </div>
       </template>
-    </el-dialog>
-    <el-dialog
-      title="添加标签"
-      v-model="addTagVisible"
-      width="40%"
-      align-center
-    >
-      <template #header>
-        <div style="display: flex;flex-direction:row;justify-content: center">
-          <span> 添加标签 </span>
-        </div>
+    </el-dialog>-->
+    <div v-if="blogDialogVisible">
+      <save-blog-dialog
+          :title="'保存文章'"
+          :formModel="blogTempPublishForm"
+          :formRules="blogPublishFormRules"
+          :formOption="formOption"
+          :categoryOptions="categoryOptions"
+          :tagOptions="tagStorage"
+          @confirm="saveToList"
+          @add-tag="onAddOption"
+          @cancel="blogDialogVisible = false"
+      />
+      <el-dialog
+          title="添加标签"
+          v-model="addTagVisible"
+          width="40%"
+          align-center
+      >
+        <template #header>
+          <div style="display: flex;flex-direction:row;justify-content: center">
+            <span> 添加标签 </span>
+          </div>
 
-      </template>
+        </template>
         <div class="addTagForm" v-for="(item,index) in tagFormNumber">
           <div class="addTagRowGroup" :key="index">
             <el-input
@@ -105,15 +117,17 @@
 
           </div>
         </div>
-      <template #footer>
-        <div class="addTag-dialog-footer">
-          <el-button @click="addTagVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="addTagConfirm">
-            Confirm
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
+        <template #footer>
+          <div class="addTag-dialog-footer">
+            <el-button @click="addTagVisible = false">Cancel</el-button>
+            <el-button type="primary" @click="addTagConfirm">
+              Confirm
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </div>
+
   </div>
 
 
@@ -126,29 +140,36 @@ import Vditor from "vditor";
 import "vditor/dist/index.css";
 import {DocumentAdd, Minus, Plus, Setting} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-
-interface blogItemFormRule {
-  title:string;
-  author:string;
-  description?:string;
-  tags:string[];
-  remark?:string;
-  category:string;
-}
-
-const blogFormRef = ref<FormInstance>()
-
-const blogPublishForm = reactive<blogItemFormRule>({
-  title: "",
-  author: "",
-  description: "",
-  remark:"",
-  category: "",
-  tags: [],
-})
+import type { BlogItemFormRule , BlogFormOption } from "@/api/interface";
+import SaveBlogDialog from "@/components/Dialog/SaveArticle.vue";
 
 
-const blogPublishFormRules = reactive<FormRules<blogItemFormRule>>({
+//这里的泛型 <BlogItemFormRule[]> 表示 blogTempPublishForm 是 BlogItemFormRule 对象的数组
+const blogFormRef = ref<BlogItemFormRule[]>([
+  { title:'' , author:'' , description:'' , remark:'' , category:'' , tags:[] },
+])
+
+//临时存储表单数据
+const blogTempPublishForm = reactive<BlogItemFormRule[]>([
+  {
+    title: "",
+    author: "",
+    description: "",
+    remark: "",
+    category: "",
+    tags: [],
+  }
+])
+
+//发布表单
+const blogPublishForm = reactive<BlogItemFormRule[]>([])
+
+const categoryOptions = reactive([
+  { value: "zh", label: "中文文章" },
+  { value: "en", label: "英文文章" },
+])
+
+const blogPublishFormRules = reactive<FormRules<BlogItemFormRule>>({
   title: [
     { required: true, message: "请输入文章标题", trigger: "blur" },
   ],
@@ -159,7 +180,7 @@ const blogPublishFormRules = reactive<FormRules<blogItemFormRule>>({
 
 const  tagFormNumber = ref(1)
 
-const formOption = reactive([
+const formOption = reactive<BlogFormOption[]>([
     { prop: "title", placeholder: "请输入文章标题", model: "title" },
     { prop: "author", placeholder: "请输入文章作者", model: "author" },
     { prop: "description", placeholder: "请输入文章描述", model: "description" },
@@ -182,9 +203,46 @@ function modifiedTagFormNumber(num){
 const tempTagsStorage = ref([])
 const tagStorage = ref(['默认标签']);
 
-function saveToList(){
-  blogDialogVisible.value = false
+function saveToList() {
+  console.log("saveToList", blogTempPublishForm);
+
+  // 判断是否有重复的文章标题或作者，blogPublishForm 有一项与 blogTempPublishForm 有重复的就返回 true
+  const isDuplicate = blogPublishForm.some(
+      (publishItem) =>
+          publishItem.author === blogTempPublishForm[0].author ||
+          publishItem.title === blogTempPublishForm[0].title
+  );
+  console.log("isDuplicate", isDuplicate);
+
+  if(isDuplicate){
+    ElMessage.warning('文章标题或作者重复，请重新输入！');
+    return;
+  }
+
+  // 将 blogTempPublishForm 的内容追加到 blogPublishForm 中
+  blogTempPublishForm.forEach((tempItem) => {
+    blogPublishForm.push({ ...tempItem }); // 深拷贝追加，避免引用问题
+  });
+
+  console.log("Updated blogPublishForm after push:", blogPublishForm);
+
+  // 清空 blogTempPublishForm，将其字段重置为默认值
+  blogTempPublishForm.splice(0, 1, {
+    title: "",
+    author: "",
+    description: "",
+    remark: "",
+    category: "",
+    tags: [],
+  });
+
+  // 隐藏对话框
+  blogDialogVisible.value = false;
+
+  console.log("Updated blogPublishForm:", blogPublishForm);
+  console.log("Reset blogTempPublishForm:", blogTempPublishForm);
 }
+
 
 function addTagConfirm() {
   tagStorage.value = Array.from(new Set([...tagStorage.value, ...tempTagsStorage.value]));
@@ -194,14 +252,6 @@ function addTagConfirm() {
 
 const delay = ref(100);
 
-defineProps({
-  content: {
-    type: String,
-    default: "",
-  },
-});
-
-defineEmits(["update:content"]);
 
 const blogDialogVisible = ref(false);
 const addTagVisible = ref(false)
@@ -209,6 +259,7 @@ const addTagVisible = ref(false)
 function onAddOption(){
   addTagVisible.value=true
 }
+
 
 function loadVditor() {
   console.log("Vditor mounted");

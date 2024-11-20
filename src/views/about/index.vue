@@ -5,59 +5,78 @@
       </el-card>
     </div>
     <div class="about-latest-commit">
-      <el-card class="committer-body">
-        <div class="committer-title">
-          <span> 🍉 Show the latest 5 records of commit </span>
+      <el-card>
+        <div class="committer-container">
+          <div class="committer-title">
+            <span> 🍉 Show the latest 5 records of commit </span>
 
-          <el-tooltip content="Backend Project repository set as default" placement="top">
-            <el-select class="branch-select" placeholder="Select repo" v-model="repoInformation">
-              <el-option
-                  v-for="item in repoData"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name"
-              />
-            </el-select>
-          </el-tooltip>
-          <el-tooltip content="Main branch set as default" placement="top">
-            <el-select class="branch-select" placeholder="Select branch" v-model="commitBranchInformation">
-              <el-option
-                v-for="item in branchData"
-                :key="item.name"
-                :value="item.name"
-                :label="item.name"
-              />
-            </el-select>
-          </el-tooltip>
+            <el-tooltip content="Backend Project repository set as default" placement="top">
+              <el-select class="branch-select" placeholder="Select repo" v-model="repoInformation">
+                <el-option
+                    v-for="item in repoData"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                />
+              </el-select>
+            </el-tooltip>
+            <el-tooltip content="Main branch set as default" placement="top">
+              <el-select class="branch-select" placeholder="Select branch" v-model="commitBranchInformation">
+                <el-option
+                    v-for="item in branchData"
+                    :key="item.name"
+                    :value="item.name"
+                    :label="item.name"
+                />
+              </el-select>
+            </el-tooltip>
 
-          <el-button class="committer-button" @click="resetCommitInformation">
-            <span>Reset</span>
-            <el-icon style="margin-left: 2px" :class="getCommitInformationState ? 'is-loading' : '' ">
-              <Refresh/>
-            </el-icon>
-          </el-button>
-        </div>
-        <el-table :data="tableData" border style="width: 100%" empty-text="No data yet">
-          <el-table-column prop="date" label="Latest Day" width="180"></el-table-column>
-          <el-table-column label="Commiter" width="180">
-            <template #default="{ row }">
-              <div style="display: flex; align-items: center ; font-weight: bold">
-                <el-avatar :src="row.avatar" shape="square" size="small" style="margin-right: 8px"></el-avatar>
-                <span class="committer-name">
+            <el-button class="committer-button" @click="resetCommitInformation">
+              <span>Reset</span>
+              <el-icon :class="getCommitInformationState ? 'is-loading' : '' ">
+                <Refresh/>
+              </el-icon>
+            </el-button>
+          </div>
+          <div class="committer-body">
+            <el-scrollbar max-height="300px">
+              <el-table :data="tableData" border style="width: 100%" empty-text="No data yet">
+                <el-table-column prop="date" label="Latest Day" width="180"></el-table-column>
+                <el-table-column label="Commiter" width="180">
+                  <template #default="{ row }">
+                    <div style="display: flex; align-items: center ; font-weight: bold">
+                      <el-avatar :src="row.avatar" shape="square" size="small" style="margin-right: 8px"></el-avatar>
+                      <span class="committer-name">
                   {{ row.name }}
                 </span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="content" label="Content"></el-table-column>
-        </el-table>
-        <el-pagination style="margin-top: 10px ;"
-          :page-size="perPage"
-          :total="totalRecords"
-          :current-page="currentPage"
-          layout="prev, pager, next"
-          @current-change="handleCurrentChange"
-        />
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="content" label="Content"></el-table-column>
+              </el-table>
+            </el-scrollbar>
+
+          </div>
+          <div class="committer-footer">
+            <el-select
+              v-model="perPage"
+              placeholder="Choose per_page number"
+            >
+              <el-option :value=5 label="5 commits per page"></el-option>
+              <el-option :value=10 label="10 commits per page"></el-option>
+              <el-option :value=15 label="15 commits per page"></el-option>
+              <el-option :value=20 label="20 commits per page"></el-option>
+              <el-option :value=25 label="25 commits per page"></el-option>
+            </el-select>
+            <el-pagination
+                :page-size="perPage"
+                :total="totalRecords"
+                :current-page="currentPage"
+                layout="prev, pager, next"
+                @current-change="handleCurrentChange"
+            />
+          </div>
+        </div>
       </el-card>
     </div>
     <div class="about-usage">
@@ -121,7 +140,7 @@ async function getCommitInformation(){
         owner:'Linncharm',
         repo: repoInformation.value || 'MyVueBackendProject',
         sha:commitBranchInformation.value || 'main',
-        per_page:perPage.value,
+        per_page:perPage.value || 5,
         page:currentPage.value,
         headers: {
           'X-GitHub-Api-Version': '2022-11-28'
@@ -234,7 +253,7 @@ function resetCommitInformation(){
 }
 
 watch(
-    ()=>repoInformation.value + commitBranchInformation.value,
+    ()=>repoInformation.value + commitBranchInformation.value + perPage.value,
     ()=>{
       resetCommitInformation();
     }
