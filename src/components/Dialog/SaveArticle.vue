@@ -13,18 +13,18 @@
     >
       <div class="blog-publish-form-input-group">
         <el-form-item
-            v-for="item in props.formOption"
+            v-for="(item,index) in props.formOption"
             :key="item.prop"
             :prop="item.prop"
             style="width: 45%; margin-top: 10px"
         >
-          <el-input v-model="props.formModel[item.model]" :placeholder="item.placeholder"></el-input>
+          <el-input v-model="props.formModel[0][item.model]" :placeholder="item.placeholder"></el-input>
         </el-form-item>
 
         <el-select
             style="width: 45%; margin-top: 10px"
             placeholder="请选择文章分类"
-            v-model="props.formModel.category"
+            v-model="props.formModel[0].category"
         >
           <el-option v-for="option in props.categoryOptions" :key="option.value" :value="option.value" :label="option.label" />
         </el-select>
@@ -32,7 +32,7 @@
         <el-select
             style="width: 45%; margin-top: 10px"
             placeholder="请选择文章标签"
-            v-model="props.formModel.tags"
+            v-model="props.formModel[0].tags"
             multiple
         >
           <el-option v-for="tag in props.tagOptions" :key="tag" :value="tag" :label="tag" />
@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from "vue";
 import { DocumentAdd } from "@element-plus/icons-vue";
-
+import type { BlogFormOption } from "@/api/interface";
 
 const visible = ref(true)
 // Props
@@ -82,7 +82,7 @@ const props = defineProps({
     default: "90%",
   },
   formModel: {
-    type: Object,
+    type: Array,
     required: true,
   },
   formRules: {

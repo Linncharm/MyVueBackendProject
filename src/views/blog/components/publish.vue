@@ -140,22 +140,29 @@ import Vditor from "vditor";
 import "vditor/dist/index.css";
 import {DocumentAdd, Minus, Plus, Setting} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import type { BlogItemFormRule } from "@/api/interface";
+import type { BlogItemFormRule , BlogFormOption } from "@/api/interface";
 import SaveBlogDialog from "@/components/Dialog/SaveArticle.vue";
 
 
-const blogFormRef = ref<FormInstance>()
+//这里的泛型 <BlogItemFormRule[]> 表示 blogTempPublishForm 是 BlogItemFormRule 对象的数组
+const blogFormRef = ref<BlogItemFormRule[]>([
+  { title:'' , author:'' , description:'' , remark:'' , category:'' , tags:[] },
+])
 
-const blogTempPublishForm = reactive<BlogItemFormRule>({
-  title: "",
-  author: "",
-  description: "",
-  remark:"",
-  category: "",
-  tags: [],
-})
+//临时存储表单数据
+const blogTempPublishForm = reactive<BlogItemFormRule[]>([
+  {
+    title: "",
+    author: "",
+    description: "",
+    remark: "",
+    category: "",
+    tags: [],
+  }
+])
 
-const blogPublishForm = reactive<BlogItemFormRule>({})
+//发布表单
+const blogPublishForm = reactive<BlogItemFormRule[]>([])
 
 const categoryOptions = reactive([
   { value: "zh", label: "中文文章" },
@@ -173,7 +180,7 @@ const blogPublishFormRules = reactive<FormRules<BlogItemFormRule>>({
 
 const  tagFormNumber = ref(1)
 
-const formOption = reactive([
+const formOption = reactive<BlogFormOption[]>([
     { prop: "title", placeholder: "请输入文章标题", model: "title" },
     { prop: "author", placeholder: "请输入文章作者", model: "author" },
     { prop: "description", placeholder: "请输入文章描述", model: "description" },
@@ -199,10 +206,12 @@ const tagStorage = ref(['默认标签']);
 function saveToList() {
   console.log("saveToList", blogTempPublishForm);
 
-  const isDuplicate = Object.values(blogPublishForm).some( (item:BlogItemFormRule) =>{
-    return item.author === blogTempPublishForm.author || item.title === blogTempPublishForm.title;
-  })
-
+  // 判断是否有重复的文章标题或作者，blogPublishForm 有一项与 blogTempPublishForm 有重复的就返回 true
+  const isDuplicate = blogPublishForm.some(
+      (publishItem) =>
+          publishItem.author === blogTempPublishForm[0].author ||
+          publishItem.title === blogTempPublishForm[0].title
+  );
   console.log("isDuplicate", isDuplicate);
 
   if(isDuplicate){
@@ -210,21 +219,21 @@ function saveToList() {
     return;
   }
 
-  // 将 blogTempPublishForm 的内容复制到 blogPublishForm
-  Object.keys(blogTempPublishForm).forEach((key) => {
-    blogPublishForm[key] = blogTempPublishForm[key];
+  // 将 blogTempPublishForm 的内容追加到 blogPublishForm 中
+  blogTempPublishForm.forEach((tempItem) => {
+    blogPublishForm.push({ ...tempItem }); // 深拷贝追加，避免引用问题
   });
 
+  console.log("Updated blogPublishForm after push:", blogPublishForm);
+
   // 清空 blogTempPublishForm，将其字段重置为默认值
-  Object.keys(blogTempPublishForm).forEach((key) => {
-    const value = blogTempPublishForm[key];
-    if (Array.isArray(value)) {
-      blogTempPublishForm[key] = []; // 重置为空数组
-    } else if (typeof value === "string") {
-      blogTempPublishForm[key] = ""; // 重置为空字符串
-    } else {
-      blogTempPublishForm[key] = ""; // 默认值处理
-    }
+  blogTempPublishForm.splice(0, 1, {
+    title: "",
+    author: "",
+    description: "",
+    remark: "",
+    category: "",
+    tags: [],
   });
 
   // 隐藏对话框

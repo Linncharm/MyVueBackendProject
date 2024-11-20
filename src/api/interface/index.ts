@@ -17,3 +17,9 @@ export interface BlogItemFormRule {
     remark?:string;
     category:string;
 }
+
+export interface BlogFormOption {
+    prop:string;
+    placeholder:string;
+    model:string;
+}
