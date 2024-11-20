@@ -1,24 +1,25 @@
 <template>
   <el-dialog
       :title="props.title"
-      v-model="props.visible"
+      v-model="visible"
       :width="props.width"
       :height="props.height"
   >
+<!--    这里必须要调整为[0]，因为formModel是一个数组,否则校验失败-->
     <el-form
-        :model="props.formModel"
+        :model="props.formModel[0]"
         class="blog-publish-form"
         :rules="props.formRules"
         ref="formRef"
     >
       <div class="blog-publish-form-input-group">
         <el-form-item
-            v-for="(item,index) in props.formOption"
+            v-for="item in props.formOption"
             :key="item.prop"
             :prop="item.prop"
             style="width: 45%; margin-top: 10px"
         >
-          <el-input v-model="props.formModel[0][item.model]" :placeholder="item.placeholder"></el-input>
+          <el-input v-model="props.formModel[0][item.prop]" :placeholder="item.placeholder"></el-input>
         </el-form-item>
 
         <el-select
@@ -60,7 +61,8 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from "vue";
 import { DocumentAdd } from "@element-plus/icons-vue";
-import type { BlogFormOption } from "@/api/interface";
+import type {BlogItemFormRule} from "@/api/interface";
+
 
 const visible = ref(true)
 // Props

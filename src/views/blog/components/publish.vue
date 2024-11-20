@@ -169,14 +169,13 @@ const categoryOptions = reactive([
   { value: "en", label: "英文文章" },
 ])
 
-const blogPublishFormRules = reactive<FormRules<BlogItemFormRule>>({
-  title: [
-    { required: true, message: "请输入文章标题", trigger: "blur" },
-  ],
-  author: [
-    { required: true, message: "请输入文章作者", trigger: "blur" },
-  ],
-})
+
+const blogPublishFormRules = reactive<FormRules<BlogItemFormRule>>(
+    {
+      title: [{ required: true, message: "请输入文章标题", trigger: "blur" }],
+      author: [{ required: true, message: "请输入文章作者", trigger: "blur" }],
+    }
+)
 
 const  tagFormNumber = ref(1)
 
@@ -187,7 +186,7 @@ const formOption = reactive<BlogFormOption[]>([
     { prop: "remark", placeholder: "请输入文章备注", model: "remark" },
 ])
 
-function modifiedTagFormNumber(num){
+function modifiedTagFormNumber(num:number){
   if(num===-1 && tagFormNumber.value===1) {
     ElMessage.warning('不能再删除了！');
     return;
