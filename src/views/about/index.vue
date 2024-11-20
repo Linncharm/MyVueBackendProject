@@ -106,6 +106,8 @@ function handleCurrentChange(page: number){
   getCommitInformation();
 }
 
+
+//一百多行的函数，不太好，应该拆分 try catch finally 嵌套过多 ，待优化
 async function getCommitInformation(){
     //不能使用const resp = ...
     //The resp variable is declared inside the try block, so it is not accessible in the finally block
