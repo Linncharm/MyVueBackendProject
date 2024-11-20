@@ -8,3 +8,12 @@ export namespace Login {
         token:string;
     }
 }
+
+export interface BlogItemFormRule {
+    title:string;
+    author:string;
+    description?:string;
+    tags:string[];
+    remark?:string;
+    category:string;
+}

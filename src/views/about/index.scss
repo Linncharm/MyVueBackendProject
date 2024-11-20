@@ -5,29 +5,48 @@
   flex-direction: column;
   justify-content: space-around;
   flex:1;
-  .el-card{
-    display: flex;
-    flex-direction: column;
-    border-radius: 10px;
+  .about-information{
+
+  }
+  .about-latest-commit{
+    .committer-container{
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      .committer-title{
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items:center;
+        gap: 15px;
+        .branch-select{
+          width: 200px;
+        }
+        .committer-button{
+          margin-left: 15px;
+          scale: 100%;
+        }
+      }
+      .committer-body{
+
+      }
+      .committer-footer{
+        .el-select{
+            width: 200px;
+        }
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: start;
+        gap: 10px;
+      }
+    }
+  }
+  .about-usage{
+
   }
 }
 
-.committer-body{
-
-}
-
-.committer-title{
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items:center;
-  padding-bottom: 15px;
-  gap: 15px;
-  .branch-select{
-    width: 200px;
-  }
-  .committer-button{
-    margin-left: 15px;
-    scale: 100%;
-  }
+.el-icon{
+  margin-left: 2px;
 }

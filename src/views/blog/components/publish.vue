@@ -1,7 +1,7 @@
 <template>
   <div class="vditor-container">
     <div id="vditor"></div>
-    <el-dialog
+<!--    <el-dialog
         title="保存文章"
         v-model="blogDialogVisible"
         width="80%"
@@ -64,19 +64,31 @@
           </el-button>
         </div>
       </template>
-    </el-dialog>
-    <el-dialog
-      title="添加标签"
-      v-model="addTagVisible"
-      width="40%"
-      align-center
-    >
-      <template #header>
-        <div style="display: flex;flex-direction:row;justify-content: center">
-          <span> 添加标签 </span>
-        </div>
+    </el-dialog>-->
+    <div v-if="blogDialogVisible">
+      <save-blog-dialog
+          :title="'保存文章'"
+          :formModel="blogTempPublishForm"
+          :formRules="blogPublishFormRules"
+          :formOption="formOption"
+          :categoryOptions="categoryOptions"
+          :tagOptions="tagStorage"
+          @confirm="saveToList"
+          @add-tag="onAddOption"
+          @cancel="blogDialogVisible = false"
+      />
+      <el-dialog
+          title="添加标签"
+          v-model="addTagVisible"
+          width="40%"
+          align-center
+      >
+        <template #header>
+          <div style="display: flex;flex-direction:row;justify-content: center">
+            <span> 添加标签 </span>
+          </div>
 
-      </template>
+        </template>
         <div class="addTagForm" v-for="(item,index) in tagFormNumber">
           <div class="addTagRowGroup" :key="index">
             <el-input
@@ -105,15 +117,17 @@
 
           </div>
         </div>
-      <template #footer>
-        <div class="addTag-dialog-footer">
-          <el-button @click="addTagVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="addTagConfirm">
-            Confirm
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
+        <template #footer>
+          <div class="addTag-dialog-footer">
+            <el-button @click="addTagVisible = false">Cancel</el-button>
+            <el-button type="primary" @click="addTagConfirm">
+              Confirm
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </div>
+
   </div>
 
 
@@ -126,19 +140,13 @@ import Vditor from "vditor";
 import "vditor/dist/index.css";
 import {DocumentAdd, Minus, Plus, Setting} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import type { BlogItemFormRule } from "@/api/interface";
+import SaveBlogDialog from "@/components/Dialog/SaveArticle.vue";
 
-interface blogItemFormRule {
-  title:string;
-  author:string;
-  description?:string;
-  tags:string[];
-  remark?:string;
-  category:string;
-}
 
 const blogFormRef = ref<FormInstance>()
 
-const blogPublishForm = reactive<blogItemFormRule>({
+const blogTempPublishForm = reactive<BlogItemFormRule>({
   title: "",
   author: "",
   description: "",
@@ -147,8 +155,14 @@ const blogPublishForm = reactive<blogItemFormRule>({
   tags: [],
 })
 
+const blogPublishForm = reactive<BlogItemFormRule>({})
 
-const blogPublishFormRules = reactive<FormRules<blogItemFormRule>>({
+const categoryOptions = reactive([
+  { value: "zh", label: "中文文章" },
+  { value: "en", label: "英文文章" },
+])
+
+const blogPublishFormRules = reactive<FormRules<BlogItemFormRule>>({
   title: [
     { required: true, message: "请输入文章标题", trigger: "blur" },
   ],
@@ -182,9 +196,44 @@ function modifiedTagFormNumber(num){
 const tempTagsStorage = ref([])
 const tagStorage = ref(['默认标签']);
 
-function saveToList(){
-  blogDialogVisible.value = false
+function saveToList() {
+  console.log("saveToList", blogTempPublishForm);
+
+  const isDuplicate = Object.values(blogPublishForm).some( (item:BlogItemFormRule) =>{
+    return item.author === blogTempPublishForm.author || item.title === blogTempPublishForm.title;
+  })
+
+  console.log("isDuplicate", isDuplicate);
+
+  if(isDuplicate){
+    ElMessage.warning('文章标题或作者重复，请重新输入！');
+    return;
+  }
+
+  // 将 blogTempPublishForm 的内容复制到 blogPublishForm
+  Object.keys(blogTempPublishForm).forEach((key) => {
+    blogPublishForm[key] = blogTempPublishForm[key];
+  });
+
+  // 清空 blogTempPublishForm，将其字段重置为默认值
+  Object.keys(blogTempPublishForm).forEach((key) => {
+    const value = blogTempPublishForm[key];
+    if (Array.isArray(value)) {
+      blogTempPublishForm[key] = []; // 重置为空数组
+    } else if (typeof value === "string") {
+      blogTempPublishForm[key] = ""; // 重置为空字符串
+    } else {
+      blogTempPublishForm[key] = ""; // 默认值处理
+    }
+  });
+
+  // 隐藏对话框
+  blogDialogVisible.value = false;
+
+  console.log("Updated blogPublishForm:", blogPublishForm);
+  console.log("Reset blogTempPublishForm:", blogTempPublishForm);
 }
+
 
 function addTagConfirm() {
   tagStorage.value = Array.from(new Set([...tagStorage.value, ...tempTagsStorage.value]));
@@ -194,14 +243,6 @@ function addTagConfirm() {
 
 const delay = ref(100);
 
-defineProps({
-  content: {
-    type: String,
-    default: "",
-  },
-});
-
-defineEmits(["update:content"]);
 
 const blogDialogVisible = ref(false);
 const addTagVisible = ref(false)
@@ -209,6 +250,7 @@ const addTagVisible = ref(false)
 function onAddOption(){
   addTagVisible.value=true
 }
+
 
 function loadVditor() {
   console.log("Vditor mounted");
