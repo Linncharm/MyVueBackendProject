@@ -39,12 +39,28 @@
         <el-table style="height: 100%" stripe :data="blogTableData">
 
             <el-table-column
-              v-for="item in blogTableData"
+              v-for="item in blogTableProp"
               :prop="item.prop"
               :label="item.prop"
-            />
-
-            <el-table-column fixed="right" label="111"></el-table-column>
+            >
+              <template v-slot="scope">
+                <!-- 判断是否需要显示 el-switch -->
+                <el-switch
+                    v-if="item.showState"
+                    v-model="scope.row[item.prop]"
+                    style="--el-switch-on-color: #13ce66"
+                />
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="Operation">
+              <template #default="scope">
+                <div class="operation-group">
+                  <el-button link type="warning">
+                    <span> 编辑 </span>
+                  </el-button>
+                </div>
+              </template>
+            </el-table-column>
 
         </el-table>
       </div>
@@ -73,14 +89,26 @@ const blogSelect = ref('选择文章发布状态')
 //   { label:'备注' , prop:'remark' , remark:['remark test','remark test','remark test','remark test','remark test','remark test','remark test'] },
 // ])
 
+const blogTableProp = reactive([
+  {prop:'title' , showState:false},
+  {prop:'description' , showState:false},
+  {prop:'author' , showState:false},
+  {prop:'createTime' , showState:false},
+  {prop:'publishState' , showState:true},
+  {prop:'tag' , showState:false},
+  {prop:'remark' , showState:false},
+  {prop:'lastUpdatedTime' , showState:false},
+])
+
 const blogTableData = reactive([
-  { prop:'title' , title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" ,publishedState:false , tag:'default tag' , remark:'remark test'},
-  { prop:'description' , title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" ,publishedState:false , tag:'default tag' , remark:'remark test'},
-  { prop:'author' , title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" ,publishedState:false , tag:'default tag' , remark:'remark test'},
-  { prop:'createTime' , title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" ,publishedState:false , tag:'default tag' , remark:'remark test'},
-  { prop:'publishState' , title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" ,publishedState:false , tag:'default tag' , remark:'remark test'},
-  { prop:'tag' , title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" ,publishedState:false , tag:'default tag' , remark:'remark test'},
-  { prop:'remark' , title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" ,publishedState:false , tag:'default tag' , remark:'remark test'},
+  { title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+  { title:'Article two' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+  { title:'Article three' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+  { title:'Article four' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+  { title:'Article five' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+  { title:'Article six' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+  { title:'Article seven' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+  { title:'Article eight' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
 ])
 
 function createBlog() {
