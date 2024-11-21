@@ -17,7 +17,7 @@
         </el-select>
       </el-tooltip>
       <el-button-group class="blog-button-group">
-        <el-button @click="requestBlogInformation">
+        <el-button @click="getBlogTableData">
           <span> 重置 </span>
           <el-icon style="margin-left: 2px" :class="getBlogInformationState ? 'is-loading' : '' ">
             <Refresh/>
@@ -42,7 +42,6 @@
               v-for="item in blogTableProp"
               :prop="item.prop"
               :label="item.prop"
-              :filter-method="filterState()"
             >
               <template v-slot="scope">
                 <!-- 判断是否需要显示 el-switch -->
@@ -72,23 +71,31 @@
 
 <script setup lang="ts">
 
-import {reactive, ref} from 'vue'
+import {reactive, ref , onMounted} from 'vue'
 import {Refresh, Search} from "@element-plus/icons-vue";
 import router from '@/router/index'
+
+import axios from "axios";
+
+interface BlogTableProp {
+  title: string,
+  description: string,
+  author: string,
+  createTime: string,
+  lastUpdatedTime: string,
+  publishedState: boolean,
+  tag: string,
+  remark: string,
+}
+
+interface BlogTableResp {
+  code: number,
+  data: object
+}
 
 const getBlogInformationState = ref(false);
 
 const blogSelect = ref()
-
-// const blogTableData = reactive([
-//   { label:'文章标题' , prop:'title' , title:['Article one','Article two','Article three','Article four','Article five','Article six','Article seven'] },
-//   { label:'文章描述' , prop:'description' , description:['test 1','test 2','test 3','test 4','test 5','test 6','test 7'] },
-//   { label:'作者' , prop:'author' , author:['AAA','BBB','CCC','DDD','EEE','FFF','GGG'] },
-//   { label:'创建时间' , prop:'createTime' , creatTime:['2024-11-08T15:08:43Z','2024-11-08T15:08:43Z']},
-//   { label:'发布状态' , prop:'publishedState' , publishedState:[false,false,false,false,false,false,false] },
-//   { label:'标签' , prop:'tag' ,tag:['default tag','default tag','default tag','default tag','default tag','default tag','default tag'] },
-//   { label:'备注' , prop:'remark' , remark:['remark test','remark test','remark test','remark test','remark test','remark test','remark test'] },
-// ])
 
 const blogTableProp = reactive([
   {prop:'title' , showState:false},
@@ -101,16 +108,38 @@ const blogTableProp = reactive([
   {prop:'lastUpdatedTime' , showState:false},
 ])
 
-const blogTableData = reactive([
-  { title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-  { title:'Article two' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-  { title:'Article three' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-  { title:'Article four' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-  { title:'Article five' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-  { title:'Article six' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-  { title:'Article seven' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-  { title:'Article eight' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-])
+const blogReqConfig = {
+  method: 'get',
+  url: 'http://127.0.0.1:4523/m1/5361679-5033621-default/api/vi/blog/get',
+};
+
+// const blogTableData = reactive([
+//   { title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+//   { title:'Article two' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+//   { title:'Article three' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+//   { title:'Article four' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+//   { title:'Article five' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+//   { title:'Article six' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+//   { title:'Article seven' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+//   { title:'Article eight' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
+// ])
+
+const blogTableData = reactive([])
+
+async function getBlogTableData() {
+  let blogResp: BlogTableResp = {code: 0, data: {}} ;
+  try {
+    blogResp = await axios(blogReqConfig)
+  } catch (e) {
+    console.log(e)
+  } finally {
+    console.log(blogResp)
+  }
+
+  blogResp.data.data.forEach((item)=>{
+    blogTableData.push(item)
+  })
+}
 
 function filterState(value, row, column) {
   const property = column['property'];
@@ -121,9 +150,9 @@ function createBlog() {
   router.push('/blog/publish')
 }
 
-async function requestBlogInformation(){
-  console.log("blog information is pending")
-}
+onMounted(()=>{
+  getBlogTableData();
+})
 
 </script>
 
