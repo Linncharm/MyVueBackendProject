@@ -12,9 +12,9 @@
     <div class="blog-filter-group">
       <el-tooltip content="选择文章发布状态" placement="top">
         <el-select class="blog-select" v-model="blogTableFilters.publishedState" :placeholder="'选择文章发布状态'">
-          <el-option value=2 label="全部"></el-option>
-          <el-option value=1 label="已发布"></el-option>
-          <el-option value=0 label="未发布"></el-option>
+          <el-option value="all" label="全部"></el-option>
+          <el-option value="done" label="已发布"></el-option>
+          <el-option value="still" label="未发布"></el-option>
         </el-select>
       </el-tooltip>
       <el-button-group class="blog-button-group">
@@ -84,7 +84,7 @@ interface BlogTableProp {
   author: string,
   createTime: string,
   lastUpdatedTime: string,
-  publishedState: number,
+  publishedState: string,
   tag: string,
   remark: string,
 }
@@ -112,7 +112,7 @@ const blogTableProp = reactive([
 ])
 
 const blogTableFilters = reactive<BlogTableProp>({
-  publishedState: 2,
+  publishedState: '',
   title: '',
   description: '',
   author: '',
@@ -161,11 +161,16 @@ async function getBlogTableData() {
 const filteredBlogTableData = computed(()=>{
   console.log("blogTableFilters.publishedState",blogTableFilters.publishedState)
   //如果是全部状态，直接返回所有数据
-  if(Number(blogTableFilters.publishedState) === 2){
+  if(String(blogTableFilters.publishedState) === 'all' || blogTableFilters.publishedState === ''){
     return blogTableData
   }else {
     return blogTableData.filter((item)=>{
-      return Number(item.publishedState) === Number(blogTableFilters.publishedState)
+      //return item.publishedState === blogTableFilters.publishedState
+      if(String(item.publishedState) === 'true'){
+        return String(blogTableFilters.publishedState) === 'done'
+      }else {
+        return String(blogTableFilters.publishedState) === 'still'
+      }
     })
   }
 
