@@ -11,7 +11,8 @@
 
     <div class="blog-filter-group">
       <el-tooltip content="选择文章发布状态" placement="top">
-        <el-select class="blog-select" v-model="blogSelect" :placeholder="'选择文章发布状态'">
+        <el-select class="blog-select" v-model="blogTableFilters.publishedState" :placeholder="'选择文章发布状态'">
+          <el-option value=2 label="全部"></el-option>
           <el-option value=1 label="已发布"></el-option>
           <el-option value=0 label="未发布"></el-option>
         </el-select>
@@ -36,7 +37,7 @@
     </div>
     <div class="blog-content">
       <div class="blog-table">
-        <el-table style="height: 100%" stripe :data="blogTableData">
+        <el-table style="height: 100%" stripe :data="filteredBlogTableData">
 
             <el-table-column
               v-for="item in blogTableProp"
@@ -71,7 +72,7 @@
 
 <script setup lang="ts">
 
-import {reactive, ref , onMounted} from 'vue'
+import {reactive, ref, onMounted, computed} from 'vue'
 import {Refresh, Search} from "@element-plus/icons-vue";
 import router from '@/router/index'
 
@@ -83,14 +84,16 @@ interface BlogTableProp {
   author: string,
   createTime: string,
   lastUpdatedTime: string,
-  publishedState: boolean,
+  publishedState: number,
   tag: string,
   remark: string,
 }
 
 interface BlogTableResp {
   code: number,
-  data: object
+  data: {
+    data: BlogTableProp[]
+  }
 }
 
 const getBlogInformationState = ref(false);
@@ -102,18 +105,29 @@ const blogTableProp = reactive([
   {prop:'description' , showState:false},
   {prop:'author' , showState:false},
   {prop:'createTime' , showState:false},
-  {prop:'publishState' , showState:true},
+  {prop:'publishedState' , showState:true},
   {prop:'tag' , showState:false},
   {prop:'remark' , showState:false},
   {prop:'lastUpdatedTime' , showState:false},
 ])
+
+const blogTableFilters = reactive<BlogTableProp>({
+  publishedState: 2,
+  title: '',
+  description: '',
+  author: '',
+  createTime: '',
+  lastUpdatedTime: '',
+  tag: '',
+  remark: '',
+})
 
 const blogReqConfig = {
   method: 'get',
   url: 'http://127.0.0.1:4523/m1/5361679-5033621-default/api/vi/blog/get',
 };
 
-// const blogTableData = reactive([
+// const filteredBlogTableData = reactive([
 //   { title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
 //   { title:'Article two' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
 //   { title:'Article three' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
@@ -124,10 +138,12 @@ const blogReqConfig = {
 //   { title:'Article eight' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
 // ])
 
-const blogTableData = reactive([])
 
+const blogTableData = reactive<BlogTableProp[]>([])
+
+//首先获取表格数据
 async function getBlogTableData() {
-  let blogResp: BlogTableResp = {code: 0, data: {}} ;
+  let blogResp: BlogTableResp | { code: number, data: { data: [] } } = { code: 0, data: { data: [] } };
   try {
     blogResp = await axios(blogReqConfig)
   } catch (e) {
@@ -136,15 +152,24 @@ async function getBlogTableData() {
     console.log(blogResp)
   }
 
-  blogResp.data.data.forEach((item)=>{
-    blogTableData.push(item)
-  })
+  //将获取到的数据替换到表格数据中
+  blogTableData.splice(0, blogTableData.length, ...blogResp.data.data)
+  console.log("BlogTableData ",blogTableData)
 }
 
-function filterState(value, row, column) {
-  const property = column['property'];
-  return row[property] === value;
-}
+//实时计算出过滤后的表格数据
+const filteredBlogTableData = computed(()=>{
+  console.log("blogTableFilters.publishedState",blogTableFilters.publishedState)
+  //如果是全部状态，直接返回所有数据
+  if(Number(blogTableFilters.publishedState) === 2){
+    return blogTableData
+  }else {
+    return blogTableData.filter((item)=>{
+      return Number(item.publishedState) === Number(blogTableFilters.publishedState)
+    })
+  }
+
+})
 
 function createBlog() {
   router.push('/blog/publish')
