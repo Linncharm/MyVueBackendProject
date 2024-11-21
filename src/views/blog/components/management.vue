@@ -11,9 +11,9 @@
 
     <div class="blog-filter-group">
       <el-tooltip content="选择文章发布状态" placement="top">
-        <el-select class="blog-select" v-model="blogSelect" :placeholder="blogSelect">
-          <el-option value="已发布"> 已发布 </el-option>
-          <el-option value="未发布"> 未发布 </el-option>
+        <el-select class="blog-select" v-model="blogSelect" :placeholder="'选择文章发布状态'">
+          <el-option value=1 label="已发布"></el-option>
+          <el-option value=0 label="未发布"></el-option>
         </el-select>
       </el-tooltip>
       <el-button-group class="blog-button-group">
@@ -42,6 +42,7 @@
               v-for="item in blogTableProp"
               :prop="item.prop"
               :label="item.prop"
+              :filter-method="filterState()"
             >
               <template v-slot="scope">
                 <!-- 判断是否需要显示 el-switch -->
@@ -77,7 +78,7 @@ import router from '@/router/index'
 
 const getBlogInformationState = ref(false);
 
-const blogSelect = ref('选择文章发布状态')
+const blogSelect = ref()
 
 // const blogTableData = reactive([
 //   { label:'文章标题' , prop:'title' , title:['Article one','Article two','Article three','Article four','Article five','Article six','Article seven'] },
@@ -110,6 +111,11 @@ const blogTableData = reactive([
   { title:'Article seven' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
   { title:'Article eight' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
 ])
+
+function filterState(value, row, column) {
+  const property = column['property'];
+  return row[property] === value;
+}
 
 function createBlog() {
   router.push('/blog/publish')

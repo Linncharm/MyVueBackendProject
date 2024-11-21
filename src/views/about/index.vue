@@ -8,7 +8,7 @@
       <el-card>
         <div class="committer-container">
           <div class="committer-title">
-            <span> 🍉 Show the latest 5 records of commit </span>
+            <span style="margin-bottom: 2px"> 🍉 Show the latest 5 records of commit </span>
 
             <el-tooltip content="Backend Project repository set as default" placement="top">
               <el-select class="branch-select" placeholder="Select repo" v-model="repoInformation">
