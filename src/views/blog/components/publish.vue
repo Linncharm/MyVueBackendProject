@@ -159,6 +159,8 @@ const blogTempPublishForm = reactive<BlogItemFormRule[]>([
     remark: "",
     category: "",
     tags: [],
+    createdTime: "",
+    lastUpdatedTime: "",
   }
 ])
 
@@ -215,24 +217,28 @@ async function saveToList() {
           publishItem.author === blogTempPublishForm[0].author ||
           publishItem.title === blogTempPublishForm[0].title
   );
-  console.log("isDuplicate", isDuplicate);
-
   if(isDuplicate){
     ElMessage.warning('文章标题或作者重复，请重新输入！');
     return;
   }
 
-  const blogReqConfig = {
-    method: 'post',
-    url: 'http://127.0.0.1:3000/api/v1/blog/set',
-    body:{
-      ...blogTempPublishForm[0]
-    }
-  };
-
   //首先获取表格数据
     let setBlogResp:any;
     try {
+
+      const nowDate = new Date();
+      blogTempPublishForm[0].createdTime = nowDate.toISOString();
+      blogTempPublishForm[0].lastUpdatedTime = nowDate.toISOString();
+
+      const blogReqConfig = {
+        method: 'post',
+        url: 'http://127.0.0.1:3000/api/v1/blog/set',
+        //需要用data而不是body
+        data:{
+          ...blogTempPublishForm[0]
+        }
+      };
+      console.log("blogReqConfig", blogReqConfig);
       setBlogResp = await axios(blogReqConfig)
     } catch (e) {
       console.log(e)
@@ -246,6 +252,8 @@ async function saveToList() {
         remark: "",
         category: "",
         tags: [],
+        createdTime: "",
+        lastUpdatedTime: "",
       });
     }
 
