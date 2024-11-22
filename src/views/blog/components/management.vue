@@ -82,18 +82,15 @@ interface BlogTableProp {
   title: string,
   description: string,
   author: string,
-  createTime: string,
+  createdTime: string,
   lastUpdatedTime: string,
   publishedState: string,
-  tag: string,
+  tags: string,
   remark: string,
 }
 
 interface BlogTableResp {
-  code: number,
-  data: {
-    data: BlogTableProp[]
-  }
+  data: BlogTableProp[]
 }
 
 const getBlogInformationState = ref(false);
@@ -104,9 +101,9 @@ const blogTableProp = reactive([
   {prop:'title' , showState:false},
   {prop:'description' , showState:false},
   {prop:'author' , showState:false},
-  {prop:'createTime' , showState:false},
+  {prop:'createdTime' , showState:false},
   {prop:'publishedState' , showState:true},
-  {prop:'tag' , showState:false},
+  {prop:'tags' , showState:false},
   {prop:'remark' , showState:false},
   {prop:'lastUpdatedTime' , showState:false},
 ])
@@ -116,36 +113,31 @@ const blogTableFilters = reactive<BlogTableProp>({
   title: '',
   description: '',
   author: '',
-  createTime: '',
+  createdTime: '',
   lastUpdatedTime: '',
-  tag: '',
+  tags: '',
   remark: '',
 })
-
-const blogReqConfig = {
-  method: 'get',
-  url: 'http://127.0.0.1:4523/m1/5361679-5033621-default/api/vi/blog/get',
-};
-
-// const filteredBlogTableData = reactive([
-//   { title:'Article one' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-//   { title:'Article two' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-//   { title:'Article three' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-//   { title:'Article four' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-//   { title:'Article five' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-//   { title:'Article six' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-//   { title:'Article seven' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-//   { title:'Article eight' , description:'test 1' , author:'AAA' ,createTime:"2024-11-08T15:08:43Z" , lastUpdatedTime:"2024-11-08T15:08:43Z" , publishedState:false , tag:'default tag' , remark:'remark test'},
-// ])
 
 
 const blogTableData = reactive<BlogTableProp[]>([])
 
 //首先获取表格数据
 async function getBlogTableData() {
-  let blogResp: BlogTableResp | { code: number, data: { data: [] } } = { code: 0, data: { data: [] } };
+
+  const blogReqConfig = {
+    method: 'get',
+    url: 'http://127.0.0.1:3000/api/v1/blog/get',
+  };
+
+  let blogResp: BlogTableResp =  {data: [ {title:'',description:'',author:'',createdTime:'',lastUpdatedTime:'',publishedState:'',tags:'',remark:''} ] };
   try {
-    blogResp = await axios(blogReqConfig)
+    const response = await axios(blogReqConfig)
+
+    //解构赋值即可！
+    blogResp = {data: response.data}
+    console.log("response",response)
+    console.log("blogResp",blogResp)
   } catch (e) {
     console.log(e)
   } finally {
@@ -153,7 +145,7 @@ async function getBlogTableData() {
   }
 
   //将获取到的数据替换到表格数据中
-  blogTableData.splice(0, blogTableData.length, ...blogResp.data.data)
+  blogTableData.splice(0, blogTableData.length, ...blogResp.data)
   console.log("BlogTableData ",blogTableData)
 }
 
