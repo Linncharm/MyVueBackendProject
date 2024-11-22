@@ -203,12 +203,10 @@ function modifiedTagFormNumber(num:number){
 const tempTagsStorage = ref([])
 const tagStorage = ref(['默认标签']);
 
-const blogSetConfig = {
-  method:'post',
-  url: 'http://127.0.0.1:4523/m1/5361679-5033621-default/api/v1/blog/set',
-}
 
-function saveToList() {
+
+/*会遇到跨域问题*/
+async function saveToList() {
   console.log("saveToList", blogTempPublishForm);
 
   // 判断是否有重复的文章标题或作者，blogPublishForm 有一项与 blogTempPublishForm 有重复的就返回 true
@@ -224,26 +222,40 @@ function saveToList() {
     return;
   }
 
+  const blogReqConfig = {
+    method: 'post',
+    url: 'http://127.0.0.1:3000/api/v1/blog/set',
+    body:{
+      ...blogTempPublishForm[0]
+    }
+  };
+
+  //首先获取表格数据
+    let setBlogResp:any;
+    try {
+      setBlogResp = await axios(blogReqConfig)
+    } catch (e) {
+      console.log(e)
+    } finally {
+      console.log(setBlogResp)
+      // 清空 blogTempPublishForm，将其字段重置为默认值
+      blogTempPublishForm.splice(0, 1, {
+        title: "",
+        author: "",
+        description: "",
+        remark: "",
+        category: "",
+        tags: [],
+      });
+    }
+
   // 将 blogTempPublishForm 的内容追加到 blogPublishForm 中
-  blogTempPublishForm.forEach((tempItem) => {
-    blogPublishForm.push({ ...tempItem }); // 深拷贝追加，避免引用问题
-  });
-
-  console.log("Updated blogPublishForm after push:", blogPublishForm);
-
-  // 清空 blogTempPublishForm，将其字段重置为默认值
-  blogTempPublishForm.splice(0, 1, {
-    title: "",
-    author: "",
-    description: "",
-    remark: "",
-    category: "",
-    tags: [],
-  });
-
+  // blogTempPublishForm.forEach((tempItem) => {
+  //   blogPublishForm.push({ ...tempItem }); // 深拷贝追加，避免引用问题
+  // });
+  //console.log("Updated blogPublishForm after push:", blogPublishForm);
   // 隐藏对话框
   blogDialogVisible.value = false;
-
   console.log("Updated blogPublishForm:", blogPublishForm);
   console.log("Reset blogTempPublishForm:", blogTempPublishForm);
 }
