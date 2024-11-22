@@ -142,6 +142,7 @@ import {DocumentAdd, Minus, Plus, Setting} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import type { BlogItemFormRule , BlogFormOption } from "@/api/interface";
 import SaveBlogDialog from "@/components/Dialog/SaveArticle.vue";
+import axios from "axios";
 
 
 //这里的泛型 <BlogItemFormRule[]> 表示 blogTempPublishForm 是 BlogItemFormRule 对象的数组
@@ -201,6 +202,11 @@ function modifiedTagFormNumber(num:number){
 
 const tempTagsStorage = ref([])
 const tagStorage = ref(['默认标签']);
+
+const blogSetConfig = {
+  method:'post',
+  url: 'http://127.0.0.1:4523/m1/5361679-5033621-default/api/v1/blog/set',
+}
 
 function saveToList() {
   console.log("saveToList", blogTempPublishForm);
