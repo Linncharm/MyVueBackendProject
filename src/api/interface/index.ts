@@ -16,9 +16,6 @@ export interface BlogItemFormRule {
     tags?:string[];
     remark?:string;
     category:string;
-    createdTime:string;
-    lastUpdatedTime:string;
-    publishState:string;
     content:string;
 }
 

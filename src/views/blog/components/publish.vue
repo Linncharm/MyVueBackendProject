@@ -1,8 +1,5 @@
 <template>
   <div class="vditor-container">
-    <div>
-      <el-button @click="saveArticle"></el-button>
-    </div>
     <div id="vditor"></div>
     <div v-if="blogDialogVisible">
       <save-blog-dialog
@@ -92,10 +89,7 @@ const blogTempPublishForm = reactive<BlogItemFormRule[]>([
     remark: "",
     category: "",
     tags: [],
-    createdTime: "",
-    lastUpdatedTime: "",
     content: "",
-    publishState: "false",
   }
 ])
 
@@ -159,13 +153,7 @@ async function saveToList() {
   //首先设置表格数据
     let setBlogResp:any;
     try {
-
-      const nowDate = new Date();
-      blogTempPublishForm[0].createdTime = nowDate.toISOString();
-      blogTempPublishForm[0].lastUpdatedTime = nowDate.toISOString();
-
       blogTempPublishForm[0].content = saveArticle();
-
       const blogReqConfig = {
         method: 'post',
         url: 'http://127.0.0.1:3000/api/v1/blog/set',
@@ -188,10 +176,7 @@ async function saveToList() {
         remark: "",
         category: "",
         tags: [],
-        createdTime: "",
-        lastUpdatedTime: "",
         content: "",
-        publishState: "",
       });
     }
 
@@ -228,6 +213,9 @@ let getVditor: ( ()=>Vditor );
 function loadVditor() {
   console.log("Vditor mounted");
   const vditor = new Vditor("vditor", {
+    cache:{
+      enable:false
+    },
     height: "90%",
     width: "100%",
     mode: "sv",
@@ -263,7 +251,7 @@ function loadVditor() {
       delay: delay.value,
       mode: "both",
       //暂时不知道有什么用
-      actions: ["desktop"],
+      actions: [],
     },
     counter: {
       enable: true,
