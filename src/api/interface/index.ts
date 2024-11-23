@@ -18,8 +18,8 @@ export interface BlogItemFormRule {
     category:string;
     createdTime:string;
     lastUpdatedTime:string;
+    publishState:string;
     content:string;
-    publishState:number;
 }
 
 export interface BlogFormOption {

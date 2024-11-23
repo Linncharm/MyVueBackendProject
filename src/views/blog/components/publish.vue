@@ -95,7 +95,7 @@ const blogTempPublishForm = reactive<BlogItemFormRule[]>([
     createdTime: "",
     lastUpdatedTime: "",
     content: "",
-    publishState: 0,
+    publishState: "false",
   }
 ])
 
@@ -191,7 +191,7 @@ async function saveToList() {
         createdTime: "",
         lastUpdatedTime: "",
         content: "",
-        publishState: 0,
+        publishState: "",
       });
     }
 

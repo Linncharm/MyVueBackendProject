@@ -11,7 +11,7 @@
 
     <div class="blog-filter-group">
       <el-tooltip content="选择文章发布状态" placement="top">
-        <el-select class="blog-select" v-model="blogTableFilters.publishedState" :placeholder="'选择文章发布状态'">
+        <el-select class="blog-select" v-model="blogTableFilters.publishFilterModel" :placeholder="'选择文章发布状态'">
           <el-option value="all" label="全部"></el-option>
           <el-option value="done" label="已发布"></el-option>
           <el-option value="still" label="未发布"></el-option>
@@ -48,7 +48,7 @@
                 <!-- 判断是否需要显示 el-switch -->
                 <el-switch
                     v-if="item.showState"
-                    v-model="scope.row[item.prop]"
+                    v-model="scope.row.publishAction"
                     style="--el-switch-on-color: #13ce66"
                 />
               </template>
@@ -84,40 +84,39 @@ interface BlogTableProp {
   author: string,
   createdTime: string,
   lastUpdatedTime: string,
-  publishedState: string,
+  publishState: number,
+  publishAction: boolean
   tags: string,
   remark: string,
+  category: string
 }
 
 interface BlogTableResp {
   data: BlogTableProp[]
 }
 
-const getBlogInformationState = ref(false);
+interface BlogFilterProp {
+  publishFilterModel: string
+}
 
-const blogSelect = ref()
+const getBlogInformationState = ref(false);
 
 const blogTableProp = reactive([
   {prop:'title' , showState:false},
   {prop:'description' , showState:false},
   {prop:'author' , showState:false},
   {prop:'createdTime' , showState:false},
-  {prop:'publishedState' , showState:true},
+  {prop:'publishState' , showState:true},
   {prop:'tags' , showState:false},
   {prop:'remark' , showState:false},
   {prop:'lastUpdatedTime' , showState:false},
 ])
 
-const blogTableFilters = reactive<BlogTableProp>({
-  publishedState: '',
-  title: '',
-  description: '',
-  author: '',
-  createdTime: '',
-  lastUpdatedTime: '',
-  tags: '',
-  remark: '',
+const blogTableFilters = reactive<BlogFilterProp>({
+  publishFilterModel: '',
 })
+
+
 
 
 const blogTableData = reactive<BlogTableProp[]>([])
@@ -130,19 +129,26 @@ async function getBlogTableData() {
     url: 'http://127.0.0.1:3000/api/v1/blog/get',
   };
 
-  let blogResp: BlogTableResp =  {data: [ {title:'',description:'',author:'',createdTime:'',lastUpdatedTime:'',publishedState:'',tags:'',remark:''} ] };
+  //为什么publishState会变为false?问题在于publishState绑定到了switch的model上，而switch的model是Boolean类型，只有ture和false两种类型
+  let blogResp: BlogTableResp =  {data: [ {title:'',description:'',author:'',createdTime:'',lastUpdatedTime:'',publishState:0,tags:'',remark:'',category:'',publishAction:false} ] };
   try {
     const response = await axios(blogReqConfig)
 
-    //解构赋值即可！
-    blogResp = {data: response.data}
     console.log("response",response)
+    //解构赋值即可！
+    blogResp = {data: response.data.map((item: BlogTableProp)=>{
+      return {...item, publishAction: item.publishState === 1}
+    })};
+    // 深拷贝（使用 JSON 方法）
+    //blogResp = {data: JSON.parse(JSON.stringify(response.data))};
     console.log("blogResp",blogResp)
   } catch (e) {
     console.log(e)
   } finally {
     console.log(blogResp)
   }
+
+
 
   //将获取到的数据替换到表格数据中
   blogTableData.splice(0, blogTableData.length, ...blogResp.data)
@@ -152,17 +158,17 @@ async function getBlogTableData() {
 //实时计算出过滤后的表格数据
 //数据量很大的情况下，这样做会不会有性能问题？
 const filteredBlogTableData = computed(()=>{
-  console.log("blogTableFilters.publishedState",blogTableFilters.publishedState)
+  console.log("blogTableFilters.publishState",blogTableFilters.publishFilterModel)
   //如果是全部状态，直接返回所有数据
-  if(String(blogTableFilters.publishedState) === 'all' || blogTableFilters.publishedState === ''){
+  if(String(blogTableFilters.publishFilterModel) === 'all' || blogTableFilters.publishFilterModel === ''){
     return blogTableData
   }else {
     return blogTableData.filter((item)=>{
-      //return item.publishedState === blogTableFilters.publishedState
-      if(String(item.publishedState) === 'true'){
-        return String(blogTableFilters.publishedState) === 'done'
+      //return item.publishState === blogTableFilters.publishState
+      if(item.publishState === 1){
+        return String(blogTableFilters.publishFilterModel) === 'done'
       }else {
-        return String(blogTableFilters.publishedState) === 'still'
+        return String(blogTableFilters.publishFilterModel) === 'still'
       }
     })
   }
