@@ -272,8 +272,20 @@ function saveArticle() {
   return vditorInstance.getValue();
 }
 
+// 定义是否已保存内容的状态
+const isContentSaved = ref(false);
+
+// 页面刷新或关闭的拦截方法
+const handleBeforeUnload = (event:any) => {
+  if (!isContentSaved.value) {
+    event.preventDefault();
+    event.returnValue = ""; // 浏览器默认弹窗
+  }
+};
+
 onMounted(() => {
   loadVditor();
+  window.addEventListener("beforeunload", handleBeforeUnload);
 })
 
 </script>
