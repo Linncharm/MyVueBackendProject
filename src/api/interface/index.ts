@@ -10,14 +10,16 @@ export namespace Login {
 }
 
 export interface BlogItemFormRule {
-    title?:string;
-    author?:string;
+    title:string;
+    author:string;
     description?:string;
     tags?:string[];
     remark?:string;
-    category?:string;
-    createdTime?:string;
-    lastUpdatedTime?:string;
+    category:string;
+    createdTime:string;
+    lastUpdatedTime:string;
+    content:string;
+    publishState:number;
 }
 
 export interface BlogFormOption {

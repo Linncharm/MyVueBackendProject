@@ -1,70 +1,9 @@
 <template>
   <div class="vditor-container">
+    <div>
+      <el-button @click="saveArticle"></el-button>
+    </div>
     <div id="vditor"></div>
-<!--    <el-dialog
-        title="保存文章"
-        v-model="blogDialogVisible"
-        width="80%"
-        height="90%"
-    >
-      <span>This is a message</span>
-        <el-form
-            :model="blogPublishForm"
-            class="blog-publish-form"
-            :rules="blogPublishFormRules"
-            ref="blogFormRef"
-        >
-            <div class="blog-publish-form-input-group">
-              <el-form-item
-                  v-for="item in formOption"
-                  :key="item.prop"
-                  :prop="item.prop"
-                  style="width: 45%; margin-top: 10px"
-              >
-                <el-input v-model="blogPublishForm[item.model]" :placeholder="item.placeholder"></el-input>
-              </el-form-item>
-              <el-select
-                  style="width: 45%; margin-top: 10px"
-                  placeholder="请选择文章分类"
-                  v-model="blogPublishForm.category"
-              >
-                <el-option value="zh" label="中文文章"></el-option>
-                <el-option value="en" label="英文文章"></el-option>
-              </el-select>
-              <el-select
-                  style="width: 45%; margin-top: 10px"
-                  placeholder="请选择文章标签"
-                  v-model="blogPublishForm.tags"
-                  multiple
-              >
-                <el-option v-for="item in tagStorage"
-                  :label="item"
-                  :value="item"
-                >
-
-                </el-option>
-                <template #footer>
-                  <el-button text bg size="small" @click="onAddOption">
-                    <span> 添加一个标签 </span>
-                    <el-icon style="margin-left: 5px">
-                      <DocumentAdd/>
-                    </el-icon>
-                  </el-button>
-                </template>
-              </el-select>
-            </div>
-
-        </el-form>
-
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="blogDialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="saveToList">
-            Confirm
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>-->
     <div v-if="blogDialogVisible">
       <save-blog-dialog
           :title="'保存文章'"
@@ -134,21 +73,15 @@
 </template>
 
 <script setup lang="ts">
-import type { FormInstance , FormRules } from "element-plus";
+import type {FormRules} from "element-plus";
+import {ElMessage} from "element-plus";
 import {onMounted, reactive, ref} from "vue";
 import Vditor from "vditor";
 import "vditor/dist/index.css";
-import {DocumentAdd, Minus, Plus, Setting} from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import type { BlogItemFormRule , BlogFormOption } from "@/api/interface";
+import {Minus, Plus} from "@element-plus/icons-vue";
+import type {BlogFormOption, BlogItemFormRule} from "@/api/interface";
 import SaveBlogDialog from "@/components/Dialog/SaveArticle.vue";
 import axios from "axios";
-
-
-//这里的泛型 <BlogItemFormRule[]> 表示 blogTempPublishForm 是 BlogItemFormRule 对象的数组
-const blogFormRef = ref<BlogItemFormRule[]>([
-  { title:'' , author:'' , description:'' , remark:'' , category:'' , tags:[] },
-])
 
 //临时存储表单数据
 const blogTempPublishForm = reactive<BlogItemFormRule[]>([
@@ -161,6 +94,8 @@ const blogTempPublishForm = reactive<BlogItemFormRule[]>([
     tags: [],
     createdTime: "",
     lastUpdatedTime: "",
+    content: "",
+    publishState: 0,
   }
 ])
 
@@ -206,7 +141,6 @@ const tempTagsStorage = ref([])
 const tagStorage = ref(['默认标签']);
 
 
-
 /*会遇到跨域问题*/
 async function saveToList() {
   console.log("saveToList", blogTempPublishForm);
@@ -222,13 +156,15 @@ async function saveToList() {
     return;
   }
 
-  //首先获取表格数据
+  //首先设置表格数据
     let setBlogResp:any;
     try {
 
       const nowDate = new Date();
       blogTempPublishForm[0].createdTime = nowDate.toISOString();
       blogTempPublishForm[0].lastUpdatedTime = nowDate.toISOString();
+
+      blogTempPublishForm[0].content = saveArticle();
 
       const blogReqConfig = {
         method: 'post',
@@ -254,6 +190,8 @@ async function saveToList() {
         tags: [],
         createdTime: "",
         lastUpdatedTime: "",
+        content: "",
+        publishState: 0,
       });
     }
 
@@ -285,7 +223,8 @@ function onAddOption(){
   addTagVisible.value=true
 }
 
-
+//通过闭包避免污染全局作用域
+let getVditor: ( ()=>Vditor );
 function loadVditor() {
   console.log("Vditor mounted");
   const vditor = new Vditor("vditor", {
@@ -306,35 +245,7 @@ function loadVditor() {
           console.log("blogDialogVisible", blogDialogVisible.value);
         },
       },
-      "|",
-      "emoji",
-      "headings",
-      "bold",
-      "italic",
-      "strike",
-      "link",
-      "|",
-      "list",
-      "ordered-list",
-      "check",
-      "outdent",
-      "indent",
-      "|",
-      "quote",
-      "line",
-      "code",
-      "inline-code",
-      "insert-before",
-      "insert-after",
-      "|",
-      "upload",
-      "table",
-      "|",
-      "undo",
-      "redo",
-      "|",
-      "fullscreen",
-      "edit-mode",
+      "|", "emoji", "headings", "bold", "italic", "strike", "link", "|", "list", "ordered-list", "check", "outdent", "indent", "|", "quote", "line", "code", "inline-code", "insert-before", "insert-after", "|", "upload", "table", "|", "undo", "redo", "|", "fullscreen", "edit-mode",
       {
         name: "more",
         toolbar: [
@@ -346,26 +257,6 @@ function loadVditor() {
           "preview",
         ],
       },
-      /*{
-        name: "customize",
-        tip: "自定义工具栏",
-        className: "right",
-        icon: Setting,
-        click:()=>{
-          console.log("customize");
-          //alert("输入自定义的debounce时间，单位毫秒");
-          const input = prompt("输入自定义的debounce时间，单位毫秒", delay.value);
-
-          const newDelay = parseInt(input, 10);
-          if (!isNaN(newDelay) && newDelay > 0) {
-            delay.value = newDelay;
-            alert(`新的 debounce 时间已设置为：${newDelay} 毫秒`);
-          } else {
-            alert("请输入有效的正整数！");
-          }
-          console.log("delay", delay.value);
-        },
-      }*/
     ],
     preview: {
       //预览 debounce 毫秒间隔
@@ -373,7 +264,6 @@ function loadVditor() {
       mode: "both",
       //暂时不知道有什么用
       actions: ["desktop"],
-      theme: {}
     },
     counter: {
       enable: true,
@@ -384,23 +274,15 @@ function loadVditor() {
     },
     theme: "classic",
   });
+  getVditor = () => vditor; // 将获取实例的方法暴露出去
 }
-  //vditor.setTheme("dark");
-  //setTipPositionForAllTools(toolbar, 's');
-//vditor.setTheme("dark");
-/*
 
-const setTipPositionForAllTools = (tools, position) => {
-  tools.forEach((tool, index) => {
-    if (typeof tool === "object" && tool !== null) {
-      // 设置 tipPosition
-      tool.tipPosition = position;
-    }
-  });
-  console.log("setTipPositionForAllTools", tools);
-};
-*/
 
+function saveArticle() {
+  const vditorInstance = getVditor(); // 获取实例
+   // 获取 Markdown 内容
+  return vditorInstance.getValue();
+}
 
 onMounted(() => {
   loadVditor();
