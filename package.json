@@ -4,9 +4,13 @@
   "private": true,
   "main": "electron-test/main.js",
   "type": "module",
+  "workspaces": [
+    "backend_service"
+  ],
   "scripts": {
     "start": "electron .",
-    "dev": "vite",
+    "dev:frontend": "vite",
+    "dev:backend": "nodemon backend_service/index.js",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
@@ -36,8 +40,10 @@
     "@types/node": "^20.17.0",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/tsconfig": "^0.5.1",
+    "concurrently": "^9.1.0",
     "electron": "^33.1.0",
     "electron-window-state": "^5.0.3",
+    "nodemon": "^3.1.7",
     "npm-run-all2": "^7.0.1",
     "sass": "^1.77.6",
     "sass-embedded": "^1.80.6",

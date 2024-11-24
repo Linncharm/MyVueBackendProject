@@ -285,7 +285,8 @@ const handleBeforeUnload = (event:any) => {
 
 onMounted(() => {
   loadVditor();
-  window.addEventListener("beforeunload", handleBeforeUnload);
+  //dev时先注释掉，不然影响热更新
+  //window.addEventListener("beforeunload", handleBeforeUnload);
 })
 
 </script>
