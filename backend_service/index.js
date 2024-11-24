@@ -8,6 +8,7 @@ const cors = require("cors")
 const blogGetRoute = require("./routers/blog/getBlogInformation");
 const blogSetRoute = require("./routers/blog/setBlogInformation");
 const blogDelRoute = require("./routers/blog/delBlogInformation");
+const blogPublishRoute = require("./routers/blog/blogPublish");
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.get("/api/v1/blog", (req, res) => {
 app.use("/api/v1/blog", blogGetRoute(sequelize));
 app.use("/api/v1/blog", blogSetRoute(sequelize));
 app.use("/api/v1/blog", blogDelRoute(sequelize));
+app.use("/api/v1/blog", blogPublishRoute(sequelize));
 
 // 启动服务器
 app.listen(port, () => {

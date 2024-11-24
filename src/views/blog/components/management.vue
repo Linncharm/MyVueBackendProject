@@ -51,7 +51,7 @@
                     v-if="item.showState"
                     v-model="scope.row.publishAction"
                     style="--el-switch-on-color: #13ce66"
-                    :before-change="() => handleBeforeChange(scope.row.id, scope.row.publishAction)"
+                    :before-change="() => onSwitchChange(scope.row.id, scope.row.publishAction,scope.row.title,scope.row.author)"
                 />
               </template>
             </el-table-column>
@@ -72,9 +72,13 @@
     <div>
       <el-dialog
           v-model="publishConfirmDialogVisible"
+          align-center
       >
         <template #header>
-          <div style="display: flex;flex-direction:row;justify-content: center">
+          <div style="display: flex;flex-direction:row;justify-content: center;align-items: center;gap: 10px">
+            <el-icon>
+              <Warning/>
+            </el-icon>
             <span> {{ publishText }} </span>
           </div>
         </template>
@@ -82,6 +86,13 @@
           <div class="dialog-footer">
             <el-button @click="publishBlogCancel">取消</el-button>
             <el-button type="primary" @click="isPublishBlog(singleBlogActionState)">确认</el-button>
+          </div>
+        </template>
+        <template #default>
+          <div style="display: flex;flex-direction:column;justify-content: center;align-items: center">
+            <span> 确认发布这篇文章吗？ </span>
+            <span> 文章名为:{{publishConfirmTitle}}</span>
+            <span> 作者为:{{publishConfirmAuthor}}</span>
           </div>
         </template>
       </el-dialog>
@@ -93,7 +104,7 @@
 <script setup lang="ts">
 
 import {reactive, ref, onMounted, computed} from 'vue'
-import {Refresh, Search} from "@element-plus/icons-vue";
+import {Refresh, Search, Warning} from "@element-plus/icons-vue";
 import router from '@/router/index'
 
 import axios from "axios";
@@ -105,8 +116,8 @@ interface BlogTableProp {
   author: string,
   createdTime: string,
   lastUpdatedTime: string,
-  publishState: number,
-  publishAction: boolean
+  publishState?: number,
+  publishAction?: number
   tags: string,
   remark: string,
   category: string
@@ -152,16 +163,16 @@ async function getBlogTableData() {
   };
 
   //为什么publishState会变为false?问题在于publishState绑定到了switch的model上，而switch的model是Boolean类型，只有ture和false两种类型
-  let blogResp: BlogTableResp =  {data: [ {id:0,title:'',description:'',author:'',createdTime:'',lastUpdatedTime:'',publishState:0,tags:'',remark:'',category:'',publishAction:false} ] };
+  let blogResp: BlogTableResp =  {data: [ {id:0,title:'',description:'',author:'',createdTime:'',lastUpdatedTime:'',publishState:0,tags:'',remark:'',category:''} ] };
   try {
     const response = await axios(blogReqConfig)
 
     console.log("response",response)
     //解构赋值即可！
-    // blogResp = {data: response.data.map((item: BlogTableProp)=>{
-    //   return {...item, publishAction: item.publishState === 1}
-    // })};
-    blogResp = {data: response.data};
+    blogResp = {data: response.data.map((item: BlogTableProp)=>{
+      return {...item, publishAction: item.publishAction === 1}
+    })};
+    //blogResp = {data: response.data};
     // 深拷贝（使用 JSON 方法）
     //blogResp = {data: JSON.parse(JSON.stringify(response.data))};
     console.log("blogResp",blogResp)
@@ -202,6 +213,8 @@ const filteredBlogTableData = computed(()=>{
 const publishText = ref('确认发布');
 const CancelPublishText = ref('取消发布');
 const publishConfirmDialogVisible = ref(false);
+const publishConfirmTitle = ref('');
+const publishConfirmAuthor = ref('');
 
 //从开到关或者关到开都要提示
 
@@ -226,31 +239,38 @@ const getIdHandler = createGetID();
 //后续如果需要在其他组件使用这个状态可以考虑迁移至pinia
 const singleBlogActionState = ref(false);
 
+async function onSwitchChange(id:number, action:boolean, title:string, author:string) {
+  const canChange = await handleBeforeChange(id, action, title, author);
+
+  if (!canChange) {
+    console.log("Switch operation cancelled or failed.");
+    return false; // 不允许切换
+  }
+
+  console.log("Switch operation successful.");
+  return true; // 允许切换
+}
 
 
-function handleBeforeChange(id: number,action: boolean) {
+function handleBeforeChange(
+    id: number,
+    action: boolean,
+    title: string,
+    author: string):Promise<boolean> {
 
   //获取这条博客的id并传递给confirm，通过闭包将id传递出去，避免污染全局作用域
+  publishConfirmAuthor.value = author;
+  publishConfirmTitle.value = title;
   getIdHandler.setID(id);
   singleBlogActionState.value = action;
   publishConfirmDialogVisible.value = true;
 
   //此处可以返回一个Promise，如果返回false，switch就不会切换，结合弹窗使用
   //需要实现和isPublishBlog的异步逻辑
-  return new Promise((resolve, reject) => {
-
-    //确认分为成功确认和失败确认
-    const onDialogConfirm = () => {
-
-      resolve(true); // 用户点击确定，resolve为true
-    };
-
-    const onDialogCancel = () => {
-      resolve(false); // 用户点击取消，resolve为false
-    };
-
-  });
+  // 返回一个挂起的 Promise
+  return true;
 }
+
 
 function publishBlogCancel() {
   console.log("cancelPublishBlog")
@@ -265,11 +285,18 @@ async function isPublishBlog(action: boolean) {
   const blogID = getIdHandler.getID();
   console.log("isPublishBlog", blogID, action)
   try{
-    const a = setTimeout(()=>{
-      console.log("setTimeout")
-    },1000)
-  }catch (e){
-
+    const publishReqConfig = {
+      method: 'post',
+      url: 'http://127.0.0.1:3000/api/v1/blog/publish',
+      data: {
+        id: blogID,
+        action: !action
+      }
+    }
+    const publishResp = await axios(publishReqConfig)
+    console.log("publishResp",publishResp)
+    }catch (e){
+    console.log(e)
   }finally {
     publishConfirmDialogVisible.value = false;
   }
