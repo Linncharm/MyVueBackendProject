@@ -1,6 +1,6 @@
-const express = require("express");
+import express from "express";
 
-module.exports = (sequelize) => {
+export default(sequelize) => {
     const router = express.Router();
 
     router.delete("/del", async (req, res) => {

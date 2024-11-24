@@ -2,6 +2,7 @@
   "name": "myexpressproject",
   "version": "1.0.0",
   "description": "based on express.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
@@ -14,6 +15,7 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "mysql": "^2.18.1",
+    "octokit": "^4.0.2",
     "sequelize": "^6.37.5"
   },
   "devDependencies": {

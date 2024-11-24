@@ -1,14 +1,14 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const { Sequelize } = require("sequelize");
+import express from "express";
+import bodyParser from "body-parser";
+import { Sequelize } from "sequelize";
 
-const cors = require("cors")
+import cors from "cors";
 
 // 导入路由模块
-const blogGetRoute = require("./routers/blog/getBlogInformation");
-const blogSetRoute = require("./routers/blog/setBlogInformation");
-const blogDelRoute = require("./routers/blog/delBlogInformation");
-const blogPublishRoute = require("./routers/blog/blogPublish");
+import blogGetRoute from "./routers/blog/getBlogInformation.js";
+import blogSetRoute from "./routers/blog/setBlogInformation.js";
+import blogDelRoute from "./routers/blog/delBlogInformation.js";
+import blogPublishRoute from "./routers/blog/blogPublish.js";
 
 const app = express();
 
