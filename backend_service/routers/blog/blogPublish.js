@@ -1,5 +1,7 @@
 import express from "express";
-import { Octokit } from "octokit";
+import {Octokit} from "octokit";
+import fs from "fs";
+import path from "path";
 
 export default (sequelize) => {
     const router = express.Router();
@@ -27,17 +29,14 @@ export default (sequelize) => {
             //通过github restful上传content到main分支，触发github action自动部署
             const { id } = req.body;
             const publishQuery = `
-                SELECT blogContent , title ,category FROM blog.blog_information
+                SELECT blogContent , title ,category,description FROM blog.blog_information
                 WHERE id = :id;
             `;
             const [content] = await sequelize.query(publishQuery, {
                 replacements: { id },
             });
             const { blogContent , title ,category ,description} = content[0];
-            const fileName = title;
-            const fs = require("fs");
-            const path = require("path");
-            const filePath = path.join(__dirname, `../../../content/${category}/${fileName}.md`);
+            const filePath = `../../../content/${category}/${title}.md`;
 
             //保存本地
             // 检查目录是否存在，如果不存在则创建目录
@@ -69,7 +68,7 @@ export default (sequelize) => {
                 const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
                     owner: 'Linncharm',
                     repo: 'Linncharm.github.io',
-                    path: '/docs',
+                    path: 'docs/test1.md',
                     message: description,
                     committer: {
                         name: 'Linncharm',
