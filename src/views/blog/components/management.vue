@@ -287,7 +287,7 @@ async function isPublishBlog(action: boolean) {
   try{
     const publishReqConfig = {
       method: 'post',
-      url: 'http://127.0.0.1:3000/api/v1/blog/publish',
+      url: 'https://blog-management-seven-beta.vercel.app/api/v1/blog/publish',
       data: {
         id: blogID,
         action: !action

@@ -156,7 +156,7 @@ async function saveToList() {
       blogTempPublishForm[0].content = saveArticle();
       const blogReqConfig = {
         method: 'post',
-        url: 'http://127.0.0.1:3000/api/v1/blog/set',
+        url: 'https://blog-management-seven-beta.vercel.app/api/v1/blog/set',
         //需要用data而不是body
         data:{
           ...blogTempPublishForm[0]
