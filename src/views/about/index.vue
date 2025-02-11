@@ -111,7 +111,7 @@ const isTotalRecordChanged = ref(false);
 
 const octokit = new Octokit({
   //my github token
-  auth:process.env.GITHUB_TOKEN,
+  auth:"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",
   request: {
     timeout: 500
   }
