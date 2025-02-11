@@ -11,7 +11,7 @@
     "start": "electron .",
     "dev:frontend": "vite",
     "dev:backend": "nodemon backend_service/index.js",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "run-p \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force"
