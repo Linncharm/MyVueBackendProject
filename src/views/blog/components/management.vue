@@ -159,7 +159,7 @@ async function getBlogTableData() {
 
   const blogReqConfig = {
     method: 'get',
-    url: 'http://127.0.0.1:3000/api/v1/blog/get',
+    url: 'https://blog-management-seven-beta.vercel.app/api/v1/blog/get',
   };
 
   //为什么publishState会变为false?问题在于publishState绑定到了switch的model上，而switch的model是Boolean类型，只有ture和false两种类型
