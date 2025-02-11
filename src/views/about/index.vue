@@ -92,7 +92,8 @@ import { Octokit } from "octokit";
 import {Refresh} from "@element-plus/icons-vue";
 import NProgress from "@/config/nprogress";
 import { ElMessage } from "element-plus";
-import * as process from "node:process";
+
+import "node:process";
 
 const tableData = ref([]);
 const repoData = ref([]);
