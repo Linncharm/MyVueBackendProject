@@ -10,7 +10,7 @@
   "scripts": {
     "start": "electron .",
     "dev:frontend": "vite",
-    "dev:backend": "nodemon api/blog/index.js",
+    "dev:backend": "nodemon api/index.js",
     "build": "run-p \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",

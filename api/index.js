@@ -4,10 +4,10 @@ import { createClient } from "@supabase/supabase-js";
 import cors from "cors";
 
 // 导入路由模块
-import blogGetRoute from "../../backend_service/routers/blog/getBlogInformation.js";
-import blogSetRoute from "../../backend_service/routers/blog/setBlogInformation.js";
-import blogDelRoute from "../../backend_service/routers/blog/delBlogInformation.js";
-import blogPublishRoute from "../../backend_service/routers/blog/blogPublish.js";
+import blogGetRoute from "../api/blog/routers/blog/getBlogInformation.js";
+import blogSetRoute from "../api/blog/routers/blog/setBlogInformation.js";
+import blogDelRoute from "../api/blog/routers/blog/delBlogInformation.js";
+import blogPublishRoute from "../api/blog/routers/blog/blogPublish.js";
 
 const app = express();
 
