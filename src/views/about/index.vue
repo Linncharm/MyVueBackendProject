@@ -92,6 +92,7 @@ import { Octokit } from "octokit";
 import {Refresh} from "@element-plus/icons-vue";
 import NProgress from "@/config/nprogress";
 import { ElMessage } from "element-plus";
+import * as process from "node:process";
 
 const tableData = ref([]);
 const repoData = ref([]);
@@ -109,7 +110,7 @@ const isTotalRecordChanged = ref(false);
 
 const octokit = new Octokit({
   //my github token
-  auth:import.meta.env.VITE_GITHUB_TOKEN,
+  auth:process.env.GITHUB_TOKEN,
   request: {
     timeout: 500
   }
