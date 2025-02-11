@@ -1,7 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { Sequelize } from "sequelize";
-
+import { createClient } from "@supabase/supabase-js";
 import cors from "cors";
 
 // 导入路由模块
@@ -14,25 +13,28 @@ const app = express();
 
 // 启用 CORS 中间件，允许所有来源访问
 app.use(cors());
-const port = 3000;
 
 // 使用 body-parser 解析 JSON 请求
 app.use(bodyParser.json());
 
-// 初始化 MySQL 数据库连接（全局共享）
-const sequelize = new Sequelize("blog", "root", "linncharm", {
-    host: "127.0.0.1",
-    dialect: "mysql",
-});
+// 初始化 Supabase 客户端
+const supabase = createClient(
+    process.env.SUPABASE_URL, // 你的 Supabase URL
+    process.env.SUPABASE_KEY  // 你的 Supabase 密钥
+);
 
 // 测试数据库连接
-sequelize.authenticate()
-    .then(() => {
-        console.log("Database connected!");
-    })
-    .catch((error) => {
-        console.error("Unable to connect to the database:", error);
-    });
+async function testConnection() {
+    const { data, error } = await supabase.from('todos').select();
+    if (error) {
+        console.error("Error connecting to Supabase:", error);
+    } else {
+        console.log("Connected to Supabase. Data:", data);
+    }
+}
+
+// 测试连接
+testConnection();
 
 // 默认路由
 app.get("/api/v1/blog", (req, res) => {
@@ -45,16 +47,13 @@ app.get("/api/v1/blog", (req, res) => {
     });
 });
 
-// 将 sequelize 实例传递给路由模块
-app.use("/api/v1/blog", blogGetRoute(sequelize));
-app.use("/api/v1/blog", blogSetRoute(sequelize));
-app.use("/api/v1/blog", blogDelRoute(sequelize));
-app.use("/api/v1/blog", blogPublishRoute(sequelize));
+// 将 supabase 实例传递给路由模块
+app.use("/api/v1/blog", blogGetRoute(supabase));
+app.use("/api/v1/blog", blogSetRoute(supabase));
+app.use("/api/v1/blog", blogDelRoute(supabase));
+app.use("/api/v1/blog", blogPublishRoute(supabase));
 
-// 启动服务器
-app.listen(port, () => {
-    console.log(`Server running at http://127.0.0.1:${port}/api/v1/blog`);
-    console.log(`Server will running at http://127.0.0.1:${port}/api/v1/blog/get`);
-    console.log(`Server will running at http://127.0.0.1:${port}/api/v1/blog/set`);
-    console.log(`Server will running at http://127.0.0.1:${port}/api/v1/blog/del`);
-});
+// 导出应用为 Serverless 函数
+export default (req, res) => {
+    app(req, res);  // 处理所有请求
+};

@@ -1,94 +1,110 @@
 import express from "express";
-import {Octokit} from "octokit";
+import { Octokit } from "octokit";
 import fs from "fs";
 import path from "path";
+import { createClient } from "@supabase/supabase-js";
 
-export default (sequelize) => {
+// 初始化 Supabase 客户端
+const supabase = createClient(
+    process.env.SUPABASE_URL, // 你的 Supabase URL
+    process.env.SUPABASE_KEY  // 你的 Supabase 密钥
+);
+
+export default () => {
     const router = express.Router();
 
     router.post("/publish", async (req, res) => {
         try {
             console.log("Publishing blog...");
             router.use(express.json());
-            const { id , action } = req.body;
+            const { id, action } = req.body;
             const formattedAction = Number(action);
             console.log("body:", req.body);
-            const updateQuery = `
-                UPDATE blog.blog_information
-                SET publishState = :formattedAction, publishAction = :formattedAction
-                WHERE id = :id;
-            `;
-            await sequelize.query(updateQuery, {
-                replacements: { formattedAction,id },
-            });
+
+            // 更新数据库中的 publishState 和 publishAction
+            const { error: updateError } = await supabase
+                .from("blog_information")
+                .update({
+                    publishState: formattedAction,
+                    publishAction: formattedAction,
+                })
+                .eq("id", id); // 条件：匹配 id
+
+            if (updateError) {
+                console.error("Error updating publish state:", updateError);
+                return res.status(500).json({ message: "Error updating publish state" });
+            }
+
             console.log("Blog published successfully!");
-        } catch (error) {
-            console.error("Error publishing blog:", error);
-            res.status(500).json({ message: "Internal server error" });
-        }finally {
-            //通过github restful上传content到main分支，触发github action自动部署
-            const { id } = req.body;
-            const publishQuery = `
-                SELECT blogContent , title ,category,description FROM blog.blog_information
-                WHERE id = :id;
-            `;
-            const [content] = await sequelize.query(publishQuery, {
-                replacements: { id },
-            });
-            const { blogContent , title ,category ,description} = content[0];
+
+            // 获取博客内容
+            const { data, error: fetchError } = await supabase
+                .from("blog_information")
+                .select("blogContent, title, category, description")
+                .eq("id", id)
+                .single(); // 获取单个结果
+
+            if (fetchError) {
+                console.error("Error fetching blog content:", fetchError);
+                return res.status(500).json({ message: "Error fetching blog content" });
+            }
+
+            const { blogContent, title, category, description } = data;
             const filePath = `../../../content/${category}/${title}.md`;
 
-            //保存本地
-            // 检查目录是否存在，如果不存在则创建目录
+            // 保存博客内容到本地
             const dirPath = path.dirname(filePath);
             if (!fs.existsSync(dirPath)) {
                 fs.mkdirSync(dirPath, { recursive: true }); // 递归创建目录
             }
             fs.writeFile(filePath, blogContent, (err) => {
                 if (err) {
-                    console.error("文件创建失败:", err);
-                    res.status(201).json({ code:200,message: "Blog published successfully" });
+                    console.error("Error saving file:", err);
+                    return res.status(500).json({ code: 500, message: "Error saving file" });
                 } else {
-                    console.log(`文件已创建: ${filePath}`);
-                    res.status(200).json({ code:200,message: "Blog published and save to local successfully" });
+                    console.log(`File created: ${filePath}`);
+                    res.status(200).json({ code: 200, message: "Blog published and saved to local successfully" });
                 }
             });
 
+            // 上传到 GitHub
             const base64Content = Buffer.from(blogContent).toString("base64");
-            //上传到github
-            await updateFile(base64Content,description);
+            await updateFile(base64Content, description);
+
+        } catch (error) {
+            console.error("Error publishing blog:", error);
+            res.status(500).json({ message: "Internal server error" });
         }
-
-        async function updateFile(content,description){
-
-            const octokit = new Octokit({
-                auth: ''
-            })
-            try{
-                const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-                    owner: 'Linncharm',
-                    repo: 'Linncharm.github.io',
-                    path: 'docs/test1.md',
-                    message: description,
-                    committer: {
-                        name: 'Linncharm',
-                        email: 'linncharm9@gmail.com'
-                    },
-                    content: content,
-                    headers: {
-                        'X-GitHub-Api-Version': '2022-11-28'
-                    }
-                });
-                console.log("publish response:",response);
-
-            }catch (error){
-                console.error("Error publishing blog to github:", error);
-            }finally {
-                console.log("Blog published to github successfully!");
-            }
-
-        }
-
     });
+
+    // 上传到 GitHub 的功能
+    async function updateFile(content, description) {
+        const octokit = new Octokit({
+            auth: process.env.GITHUB_TOKEN, // 使用 GitHub 密钥
+        });
+
+        try {
+            const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+                owner: 'Linncharm',
+                repo: 'Linncharm.github.io',
+                path: 'docs/test1.md',
+                message: description,
+                committer: {
+                    name: 'Linncharm',
+                    email: 'linncharm9@gmail.com',
+                },
+                content: content,
+                headers: {
+                    'X-GitHub-Api-Version': '2022-11-28',
+                },
+            });
+            console.log("GitHub publish response:", response);
+        } catch (error) {
+            console.error("Error publishing blog to GitHub:", error);
+        } finally {
+            console.log("Blog published to GitHub successfully!");
+        }
+    }
+
     return router;
-}
+};

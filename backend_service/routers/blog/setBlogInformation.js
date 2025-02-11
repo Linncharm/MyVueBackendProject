@@ -1,40 +1,58 @@
 import express from "express";
+import { createClient } from '@supabase/supabase-js';
 
-export default (sequelize) => {
+// 初始化 Supabase 客户端
+const supabase = createClient(
+    process.env.SUPABASE_URL, // 你的 Supabase URL
+    process.env.SUPABASE_KEY  // 你的 Supabase 密钥
+);
+
+export default () => {
     const router = express.Router();
 
+    // 新增博客接口
     router.post("/set", async (req, res) => {
         try {
-
             console.log("Inserting blog...");
 
-            router.use(express.json());
-
-            //初始化设置放在后端进行
+            // 初始化数据
             const publishState = 0;
             const publishAction = 0;
             const createdTime = new Date().toISOString();
             const lastUpdatedTime = createdTime;
 
             // 从请求体中提取参数
-            const {  title, author, description, remark, category, tags,content } = req.body;
+            const { title, author, description, remark, category, tags, content } = req.body;
             const formattedTags = JSON.stringify(tags);
             console.log("body:", req.body);
-            // 使用 raw SQL 插入数据,
-            const insertQuery = `
-                INSERT INTO blog.blog_information ( title, author, description, remark, category, tags, createdTime, lastUpdatedTime, blogContent, publishState, publishAction)
-                VALUES ( :title, :author, :description, :remark, :category, :formattedTags, :createdTime, :lastUpdatedTime , :content, :publishState, :publishAction);
-            `;
 
-            // 使用 Sequelize 执行插入语句
-            await sequelize.query(insertQuery, {
-                replacements: {  title, author, description, remark, category, formattedTags, createdTime, lastUpdatedTime,content, publishState,publishAction},
-            });
+            // 使用 Supabase 插入数据
+            const { data, error } = await supabase
+                .from('blog_information')  // 表名
+                .insert([
+                    {
+                        title,
+                        author,
+                        description,
+                        remark,
+                        category,
+                        tags: formattedTags,
+                        createdTime,
+                        lastUpdatedTime,
+                        blogContent: content,
+                        publishState,
+                        publishAction
+                    }
+                ]);
+
+            if (error) {
+                throw error;
+            }
 
             console.log("Blog inserted successfully!");
 
             // 返回成功响应
-            res.status(201).json({ message: "Blog inserted successfully" });
+            res.status(201).json({ message: "Blog inserted successfully", data });
 
         } catch (error) {
             console.error("Error inserting blog:", error);
